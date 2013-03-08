@@ -1,0 +1,1 @@
+requirejs.config({baseUrl:"js",paths:{text:"libs/text"},shim:{"libs/showdown":{exports:"Showdown"},"libs/underscore":{exports:"_"},"libs/backbone":{deps:["libs/underscore"],exports:"Backbone"},app:{deps:["libs/underscore","libs/backbone","libs/showdown"]}}});require(["app"],function(e){window.heft=new e});
