@@ -43,13 +43,20 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
 
             initialize  : function(conf) {
                 this.app = conf.app;
-                this.app.on('randomiseStyle', function() {
-                    this.currentPage.noteRecto.model.setRandomStyle();
-                }, this);
                 // wait and find out whether we're mousing or touching and then bind events as necessary
-                var that = this;
                 this.$el.on('touchstart', '.recto', $.proxy(this.initTouch, this));
                 this.$el.on('mousedown', '.recto', $.proxy(this.initMouse, this));
+
+                Backbone.Mediator.sub('note:randomisestyle', function() {
+                    this.getCurrentNoteView().model.setRandomStyle();
+                    Backbone.Mediator.pub('note:styleupdated', this.currentPage);
+                }, this);
+                Backbone.Mediator.sub('notebook:mouselongclick', function() {
+                    var nv = this.getCurrentNoteView();
+                    if (nv) {
+                        nv.showEditView.apply(nv);
+                    }
+                }, this);
             },
 
             render      : function() {
@@ -152,7 +159,8 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 }
                 this.mouseX = a.xCoord;
                 this.mouseY = a.yCoord;
-                this.trigger('notebookMouseDown');
+                this.downTime = Date.now();
+                Backbone.Mediator.pub('notebook:mousedown');
                 // this.initiateSwipeEvent(a.xCoord);
             },
 
@@ -169,16 +177,16 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 if (a.isTouch) {
                     if (yDistance > minDistance && !this.isDragging) {
                         this.isScrolling = true;
-                        this.trigger('notebookMouseScroll');
+                        Backbone.Mediator.pub('notebook:mousescroll');
                     } else if (xDistance > minDistance) {
                         e.preventDefault();
                         this.continueSwipeEvent(a.xCoord);
-                        this.trigger('notebookMouseSwipe');
+                        Backbone.Mediator.pub('notebook:mouseswipe');
                     }
                 } else {
                     if (this.isMouseDown && xDistance > minDistance) {
                         this.continueSwipeEvent(a.xCoord);
-                        this.trigger('notebookMouseSwipe');
+                        Backbone.Mediator.pub('notebook:mouseswipe');
                     }
                 }
             },
@@ -202,7 +210,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     this.isDragging = false; // is this line necessary?
                     if (distance < minDistance) {
                         this.handleClickEvent();
-                        this.trigger('notebookMouseUp');
+                        Backbone.Mediator.pub('notebook:mouseup');
                     }
                 }
             },
@@ -257,8 +265,10 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                         this.turnBack();
                     } else if (this.mouseX > 0.8) {
                         this.turnForward();
+                    } else if (Date.now() - this.downTime > 3000) {
+                        Backbone.Mediator.pub('notebook:mouselongclick');
                     } else {
-                        this.trigger('notebookMouseClick');
+                        Backbone.Mediator.pub('notebook:mouseclick');
                     }
                     // if ((this.mouseX < this.pageWidth / 2) && !this.isFirst(this.$currentPage)) {
                     //     // this is weird, but...
@@ -365,7 +375,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     nextPage = pages[0],
                     prevPage = pages[1];
 
-                this.trigger('notebookTurnStart');
+                Backbone.Mediator.pub('notebook:pageturnstart');
 
                 this.isTurning = true;
 
@@ -422,7 +432,8 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 this.isTurning = false;
                 this.currentPageRotation = 0;
                 this.initialPageRotation = '';
-                this.trigger('notebookTurnEnd');
+                Backbone.Mediator.pub('notebook:pageturnend');
+                Backbone.Mediator.pub('noteselected', this.currentPage);
             },
 
             turnPage                    : function(isFwd) {

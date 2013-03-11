@@ -19,8 +19,8 @@ describe('App', function() {
     });
 
     it('should have one selected Note', function() {
-        var currentNoteView = heft.views.notebook.getCurrentNoteView();
-        var currentNote = heft.models.notebook.getCurrentNote();
+        var currentNoteView = heft.views.notebook.getCurrentNoteView(),
+            currentNote = heft.models.notebook.getCurrentNote();
         should.exist(currentNoteView);
         currentNoteView.should.be.an('object');
         should.exist(currentNote);
@@ -28,15 +28,13 @@ describe('App', function() {
         currentNoteView.model.should.equal(currentNote);
     });
 
-    it('should get NoteView selected Note', function() {
-        heft.getNoteView(heft.selectedNote).should.be.an('object');
-    });
-
     it('should change style of selected Note', function() {
-        var oldStyle = heft.selectedNote.get('style'),
+        var currentNoteView = heft.views.notebook.getCurrentNoteView(),
+            currentNote = heft.models.notebook.getCurrentNote(),
+            oldStyle = currentNote.get('style'),
             // mock an event object with requisite content
             e = { data: { context: heft } };
-        heft.selectedNote.get('style').should.equal(oldStyle);
+        currentNote.get('style').should.equal(oldStyle);
         heft.setRandomStyleAndReplace(e);
         heft.selectedNote.get('style').should.not.equal(oldStyle);
     });

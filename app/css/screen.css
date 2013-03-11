@@ -393,6 +393,12 @@ td {
   font-weight: normal;
   font-style: normal; }
 
+@font-face {
+  font-family: 'SourceCodePro';
+  src: url("/font/SourceCodePro-Regular-webfont.woff") format("woff"), url("/font/SourceCodePro-Regular-webfont.ttf") format("truetype"), url("/font/SourceCodePro-Regular-webfont.svg#SourceCodePro") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+
 /* line 40, ../sass/screen.scss */
 * {
   -moz-box-sizing: border-box;
@@ -433,7 +439,7 @@ td {
 /* line 81, ../sass/screen.scss */
 .edit-buttons {
   display: block;
-  background-color: #e6e6e6; }
+  background-color: #f0f0f0; }
   /* line 84, ../sass/screen.scss */
   .edit-buttons a {
     color: #333; }
@@ -546,29 +552,37 @@ body.kill-scrolling {
       padding: 0;
       width: 480px; } }
 
-/* line 197, ../sass/screen.scss */
-.edit-pane {
-  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px 0;
-  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px 0;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px 0;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  -ms-border-radius: 10px;
-  -o-border-radius: 10px;
-  border-radius: 10px;
+/* line 196, ../sass/screen.scss */
+.note-edit {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%; }
+
+/* line 203, ../sass/screen.scss */
+#note-edit-form {
+  width: 100%;
+  height: 100%; }
+
+/* line 207, ../sass/screen.scss */
+#note-edit-form textarea {
+  -webkit-user-select: text;
+  -moz-user-select: -moz-text;
+  -ms-user-select: text;
+  user-select: text;
   width: 100%;
   height: 100%;
   padding: 20px;
-  background-color: #e6e6e6;
+  background-color: #f0f0f0;
   color: #141414;
   border: 0px;
-  font: 16px/24px "source-code-pro"; }
+  font: 18px/26px "SourceCodePro"; }
 
-/* line 208, ../sass/screen.scss */
-.edit-pane:focus {
+/* line 220, ../sass/screen.scss */
+#note-edit-form textarea:focus {
   outline: 0; }
 
-/* line 213, ../sass/screen.scss */
+/* line 225, ../sass/screen.scss */
 .active-note {
   -webkit-perspective: 1000;
   -moz-perspective: 1000;
@@ -576,20 +590,19 @@ body.kill-scrolling {
   -o-perspective: 1000;
   perspective: 1000; }
 
-/* line 216, ../sass/screen.scss */
+/* line 228, ../sass/screen.scss */
 .flip-holder {
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   -ms-transform-style: preserve-3d;
   -o-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  -webkit-transition: all 0.5s linear;
-  -moz-transition: all 0.5s linear;
-  -o-transition: all 0.5s linear;
-  transition: all 0.5s linear;
-  height: 100%; }
+  -webkit-transition: all 0.2s linear;
+  -moz-transition: all 0.2s linear;
+  -o-transition: all 0.2s linear;
+  transition: all 0.2s linear; }
 
-/* line 221, ../sass/screen.scss */
+/* line 233, ../sass/screen.scss */
 .flip-me {
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
@@ -597,7 +610,7 @@ body.kill-scrolling {
   -o-transform: rotateY(180deg);
   transform: rotateY(180deg); }
 
-/* line 224, ../sass/screen.scss */
+/* line 236, ../sass/screen.scss */
 .flip-face {
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
@@ -611,15 +624,7 @@ body.kill-scrolling {
   width: 100%;
   height: 100%; }
 
-/* line 233, ../sass/screen.scss */
-.active-note-edit {
-  -webkit-transform: rotateY(180deg);
-  -moz-transform: rotateY(180deg);
-  -ms-transform: rotateY(180deg);
-  -o-transform: rotateY(180deg);
-  transform: rotateY(180deg); }
-
-/* line 237, ../sass/screen.scss */
+/* line 246, ../sass/screen.scss */
 .tile {
   display: block;
   margin: 1px 1px 0 0;
@@ -627,7 +632,7 @@ body.kill-scrolling {
   float: left;
   position: relative; }
 
-/* line 245, ../sass/screen.scss */
+/* line 254, ../sass/screen.scss */
 .tile-spinner {
   -webkit-transform: rotateZ(360deg);
   -moz-transform: rotateZ(360deg);
@@ -635,7 +640,7 @@ body.kill-scrolling {
   -o-transform: rotateZ(360deg);
   transform: rotateZ(360deg); }
 
-/* line 249, ../sass/screen.scss */
+/* line 258, ../sass/screen.scss */
 .tile > h1 {
   display: none;
   float: left;
@@ -646,7 +651,7 @@ body.kill-scrolling {
   color: #1e1e00;
   margin: 0; }
 
-/* line 260, ../sass/screen.scss */
+/* line 269, ../sass/screen.scss */
 .tile .modify-date {
   border-radius: 5px 0 5px 0;
   font-weight: normal;
@@ -659,7 +664,7 @@ body.kill-scrolling {
   color: #c8c8c8;
   margin: 0; }
 
-/* line 273, ../sass/screen.scss */
+/* line 282, ../sass/screen.scss */
 .tiles .selected-note {
   -webkit-transition: 0.4s ease-out;
   -moz-transition: 0.4s ease-out;
@@ -668,7 +673,7 @@ body.kill-scrolling {
   position: relative;
   z-index: 5; }
 
-/* line 284, ../sass/screen.scss */
+/* line 293, ../sass/screen.scss */
 .porthole {
   padding: 0;
   padding: 0;
@@ -685,7 +690,7 @@ body.kill-scrolling {
   border-radius: 5px; }
 
 /* higher specificity, to override .porthole styles for the selected note */
-/* line 301, ../sass/screen.scss */
+/* line 310, ../sass/screen.scss */
 .active-note-display {
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px 0;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px 0;
@@ -697,18 +702,13 @@ body.kill-scrolling {
   border-radius: 10px;
   border: 1px solid #999; }
 
-/* line 307, ../sass/screen.scss */
+/* line 316, ../sass/screen.scss */
 .active-note-display .note {
   -webkit-transform: scale(1);
   -moz-transform: scale(1);
   -ms-transform: scale(1);
   -o-transform: scale(1);
   transform: scale(1);
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  -o-backface-visibility: hidden;
-  backface-visibility: hidden;
   overflow-y: scroll;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -718,47 +718,52 @@ body.kill-scrolling {
   width: 100%;
   height: 100%; }
 
-/* line 316, ../sass/screen.scss */
+/* line 324, ../sass/screen.scss */
 .porthole .note {
   -webkit-transform: scale(0.5);
   -webkit-transform-origin: -10% -10%;
   -webkit-transition: -webkit-transform .5s;
   overflow: hidden; }
 
-/* line 323, ../sass/screen.scss */
+/* line 331, ../sass/screen.scss */
 .note {
   box-sizing: border-box;
   width: 480px;
   height: 690px;
   margin: 0 auto;
-  overflow: scroll; }
-  /* line 333, ../sass/screen.scss */
+  overflow: scroll;
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  -o-backface-visibility: hidden;
+  backface-visibility: hidden; }
+  /* line 339, ../sass/screen.scss */
   .note p {
     -webkit-hyphens: auto; }
   @media only screen and (max-width: 480px) {
-    /* line 323, ../sass/screen.scss */
+    /* line 331, ../sass/screen.scss */
     .note {
       -webkit-overflow-scrolling: touch;
       -webkit-transform: translateZ(0px); } }
 
-/* line 343, ../sass/screen.scss */
+/* line 350, ../sass/screen.scss */
 .note p {
   padding: 0;
   margin: 0; }
 
-/* line 348, ../sass/screen.scss */
+/* line 355, ../sass/screen.scss */
 .note h1:first-of-type {
   margin-top: 0px; }
 
-/* line 352, ../sass/screen.scss */
+/* line 359, ../sass/screen.scss */
 .first-line-bold p:first-child:first-line {
   font-weight: bold; }
 
-/* line 356, ../sass/screen.scss */
+/* line 363, ../sass/screen.scss */
 .first-line-larger p:first-child:first-line {
   font-size: 180%; }
 
-/* line 363, ../sass/screen.scss */
+/* line 370, ../sass/screen.scss */
 #book-holder {
   -webkit-perspective: 2000;
   -moz-perspective: 2000;
@@ -766,27 +771,28 @@ body.kill-scrolling {
   -o-perspective: 2000;
   perspective: 2000; }
 
-/* line 367, ../sass/screen.scss */
+/* line 374, ../sass/screen.scss */
 .book {
   position: relative;
   width: 960px;
-  height: 690px; }
+  height: 690px;
+  overflow: hidden; }
   @media only screen and (max-width: 480px) {
-    /* line 367, ../sass/screen.scss */
+    /* line 374, ../sass/screen.scss */
     .book {
       left: -480px; } }
 
-/* line 376, ../sass/screen.scss */
+/* line 384, ../sass/screen.scss */
 .page {
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   -ms-transform-style: preserve-3d;
   -o-transform-style: preserve-3d;
   transform-style: preserve-3d;
-  -webkit-transition: -webkit-transform 0.5s ease-in-out;
-  -moz-transition: -moz-transform 0.5s ease-in-out;
-  -o-transition: -o-transform 0.5s ease-in-out;
-  transition: transform 0.5s ease-in-out;
+  -webkit-transition: -webkit-transform 0.3s ease-in-out;
+  -moz-transition: -moz-transform 0.3s ease-in-out;
+  -o-transition: -o-transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out;
   -webkit-transform: translate3d(0px, 0px, 0px);
   -moz-transform: translate3d(0px, 0px, 0px);
   -ms-transform: translate3d(0px, 0px, 0px);
@@ -797,26 +803,21 @@ body.kill-scrolling {
   -ms-user-select: none;
   user-select: none; }
 
-/* line 387, ../sass/screen.scss */
+/* line 395, ../sass/screen.scss */
 .side {
   box-sizing: border-box;
   position: absolute;
-  overflow: hidden;
   top: 0px;
   left: 480px;
   width: 480px;
   height: 690px;
-  -webkit-transition: background-color 0.5s linear;
-  -moz-transition: background-color 0.5s linear;
-  -o-transition: background-color 0.5s linear;
-  transition: background-color 0.5s linear;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   -ms-backface-visibility: hidden;
   -o-backface-visibility: hidden;
   backface-visibility: hidden; }
 
-/* line 399, ../sass/screen.scss */
+/* line 406, ../sass/screen.scss */
 .verso {
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
@@ -825,11 +826,11 @@ body.kill-scrolling {
   transform: rotateY(180deg);
   background-color: #ffe; }
 
-/* line 404, ../sass/screen.scss */
+/* line 411, ../sass/screen.scss */
 .recto {
   background-color: #ffe; }
 
-/* line 408, ../sass/screen.scss */
+/* line 415, ../sass/screen.scss */
 .flipped {
   -webkit-transform: rotateY(-180deg);
   -moz-transform: rotateY(-180deg);
@@ -837,6 +838,6 @@ body.kill-scrolling {
   -o-transform: rotateY(-180deg);
   transform: rotateY(-180deg); }
 
-/* line 412, ../sass/screen.scss */
+/* line 419, ../sass/screen.scss */
 #page-store {
   display: none; }

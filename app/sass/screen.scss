@@ -46,7 +46,7 @@ $pageWidth: 480px;
 $pageHeight: 690px;
 
 // colours
-$editorBg: rgb(230,230,230);
+$editorBg: rgb(240, 240, 240);
 $editorFg: rgb(20,20,20);
 
 // the buttons
@@ -193,19 +193,31 @@ body.kill-scrolling {
         width: 480px;
     }
 }
-
-.edit-pane {
-    @include box-shadow(rgba(0,0,0, 0.2) 0 0 10px 0);
-    @include border-radius(10px);
+.note-edit {
+    // @include transform(rotateY(180deg));
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+#note-edit-form {
+    width: 100%;
+    height: 100%;
+}
+#note-edit-form textarea {
+    -webkit-user-select: text;
+    -moz-user-select: -moz-text;
+    -ms-user-select: text;
+    user-select: text;
     width: 100%;
     height: 100%;
     padding: 20px;
     background-color: $editorBg;
     color: $editorFg;
     border: 0px;
-    font: 16px/24px 'source-code-pro';
+    font: 18px/26px 'SourceCodePro';
 }
-.edit-pane:focus {
+#note-edit-form textarea:focus {
     outline: 0;
 }
 
@@ -215,8 +227,8 @@ body.kill-scrolling {
 }
 .flip-holder {
     @include transform-style(preserve-3d);
-    @include transition(all 0.5s linear);
-    height: 100%;
+    @include transition(all 0.2s linear);
+    // height: 100%;
 }
 .flip-me {
     @include transform(rotateY(180deg));    
@@ -229,9 +241,6 @@ body.kill-scrolling {
     margin: 0px;
     width: 100%;
     height: 100%;
-}
-.active-note-edit {
-    @include transform(rotateY(180deg));
 }
 
 .tile {
@@ -306,7 +315,6 @@ body.kill-scrolling {
 
 .active-note-display .note {
     @include transform(scale(1));
-    @include backface-visibility(hidden);
     overflow-y: scroll;
     @include border-radius(10px);
     width: 100%;
@@ -328,12 +336,11 @@ body.kill-scrolling {
     height: $pageHeight;
     margin: 0 auto;
     overflow: scroll;
-    // @include border-radius(0 20px 20px 0);
-
     p {
         -webkit-hyphens: auto;
     }
 
+    @include backface-visibility(hidden);
     @include iphone {
         -webkit-overflow-scrolling: touch;
         -webkit-transform: translateZ(0px);
@@ -368,6 +375,7 @@ body.kill-scrolling {
     position: relative;
     width: $pageWidth*2;
     height: $pageHeight;
+    overflow: hidden; // for the button bars
     @include iphone {
         left: -480px;
     }
@@ -375,7 +383,7 @@ body.kill-scrolling {
 
 .page {
     @include transform-style(preserve-3d);
-    @include transition(transform 0.5s ease-in-out);
+    @include transition(transform 0.3s ease-in-out);
     @include transform(translate3d(0px, 0px, 0px));
     -webkit-user-select: none;
     -moz-user-select: -moz-none;
@@ -387,12 +395,11 @@ body.kill-scrolling {
 .side {
     box-sizing: border-box;
     position: absolute;
-    overflow: hidden; // for the buttons...
     top: 0px;
     left: $pageWidth;
     width: $pageWidth;
     height: $pageHeight;
-    @include transition(background-color 0.5s linear);
+    // @include transition(background-color 0.5s linear);
     @include backface-visibility(hidden);
 }
 

@@ -1,6 +1,6 @@
-define(['text!templates/note.html'],
+define(['text!templates/note.html', 'text!templates/note-edit.html'],
 
-    function(template) {
+    function(template, editTemplate) {
 
         // get Markdown working
         var converter = new Showdown.converter();
@@ -9,14 +9,8 @@ define(['text!templates/note.html'],
             tagName     : "a",
             className   : "tile",
             template    : _.template(template),
-            events      : {
-                // 'click'     : function() {
-                //     this.trigger('selected', this.model);
-                // },
-                'dblclick'  : function() {
-                    this.trigger('doubleclicked', this.model);
-                }
-            },
+            editTemplate: _.template(editTemplate),
+            events      : {},
 
             initialize  : function() {
                 // listen to the model, re-render on changes
@@ -46,7 +40,28 @@ define(['text!templates/note.html'],
             show    : function() {
                 this.$el.css('display', '');
             },
-            
+
+            showEditView    : function() {
+                var html = this.editTemplate(this.toJSON(true)),
+                    $editView = $(html),
+                    $textArea;
+                this.$el.append($editView);
+                $editView.on('mousedown mouseup mousemove touchstart touchend touchmove', function(e) {
+                    e.stopPropagation();
+                });
+
+                $textArea = this.$el.find('textarea');
+                $textArea.focus();
+                $textArea.one('blur', $.proxy(this.hideEditView, this));
+            },
+
+            hideEditView    : function() {
+                var $editView = this.$el.find('.note-edit'),
+                    $textArea = $editView.find('textarea');
+                this.model.set('content', $textArea.val());
+                $editView.remove();
+            },
+
             renderStyle     : function() {
                 var $page = this.$el.find('.note'),
                     style = this.model.get('style'),
@@ -182,12 +197,18 @@ define(['text!templates/note.html'],
                 return height;
             },
 
-            toJSON    : function() {
-                return {
-                    'title'     : this.smarten(this.model.get('content').split('\n')[0].substr(0, 30)),
-                    'content'   : this.makeLinks(converter.makeHtml('#'+this.smarten(this.model.get('content')))),
-                    'modifyDate': this.model.getModifyDateAsString()
-                };
+            toJSON    : function(noMarkdown) {
+                if (noMarkdown) {
+                    return {
+                        'content'   : this.model.get('content')
+                    };
+                } else {
+                    return {
+                        'title'     : this.smarten(this.model.get('content').split('\n')[0].substr(0, 30)),
+                        'content'   : this.makeLinks(converter.makeHtml('#'+this.smarten(this.model.get('content')))),
+                        'modifyDate': this.model.getModifyDateAsString()
+                    };
+                }
             },
 
             makeLinks   : function(string) {

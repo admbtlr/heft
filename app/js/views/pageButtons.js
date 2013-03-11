@@ -9,7 +9,10 @@ define(['text!templates/page-buttons.html'],
             isVisible   : false,
 
             events      : {
-                // 'click .randomise-button'  : function() { this.app.trigger('randomStyle'); return false; },
+                'click .randomise-button'  : function() { 
+                    this.app.trigger('randomStyle'); 
+                    return false; 
+                },
                 'click .preview-buttons .edit-button'   : function() { this.trigger('randomStyle'); },
                 'click .preview-buttons .next-button'   : function() { this.trigger('selectNextNote'); },
                 'click .preview-buttons .prev-button'   : function() { this.trigger('selectPreviousNote'); },
@@ -19,10 +22,15 @@ define(['text!templates/page-buttons.html'],
             initialize  : function(conf) {
                 this.app = conf.app;
                 this.app.on('noteSelected', this.affixButtons, this);
-                this.on('click', '.randomise-button', function() {
+                this.$el.on('click', '.randomise-button', function() {
                     this.app.trigger('randomStyle');
-                    this.affixButtons();
                 });
+                Backbone.Mediator.sub('noteselected', this.affixButtons, this);
+                Backbone.Mediator.sub('note:styleupdated', this.affixButtons, this);
+                Backbone.Mediator.sub('notebook:mouseclick', this.toggleButtons, this);
+                Backbone.Mediator.sub('notebook:pageturnstart', this.hideButtons, this);
+                Backbone.Mediator.sub('notebook:mouseswipe', this.hideButtons, this);
+                Backbone.Mediator.sub('notebook:mousescroll', this.hideButtons, this);
             },
 
             affixButtons    : function(page) {
@@ -44,6 +52,7 @@ define(['text!templates/page-buttons.html'],
                 if ($buttonsEl.length === 0) {
                     $buttonsEl = $(this.template());
                     $noteEl.append($buttonsEl);
+                    this.addEvents($buttonsEl);
                 }
                 $buttonsEl.css('background-color', bgColorString)
                     .css('border-top', '1px solid '+contrastingColor)
@@ -57,6 +66,11 @@ define(['text!templates/page-buttons.html'],
                 $buttonsEl.on('mousedown mouseup mousemove touchstart touchend touchmove', function(e) {
                     e.stopPropagation();
                 });
+            },
+
+            addEvents       : function($buttonsEl) {
+                $buttonsEl.children('.randomise-button').on('click', function() { Backbone.Mediator.pub('note:randomisestyle'); });
+                $buttonsEl.children('.edit-button').on('click', function() { Backbone.Mediator.pub('note:edit'); });
             },
 
             toggleButtons   : function() {

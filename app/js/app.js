@@ -46,24 +46,16 @@ define(['collections/notes', 'models/notebook', 'views/app', 'views/notebook', '
 
             this.views.pageButtons = new PageButtonsView({'app': this});
 
-            this.views.notebook.on('notebookMouseClick', this.views.pageButtons.toggleButtons, this.views.pageButtons);
-            this.views.notebook.on('notebookMouseSwipe', this.views.pageButtons.hideButtons, this.views.pageButtons);
-            this.views.notebook.on('notebookMouseScroll', this.views.pageButtons.hideButtons, this.views.pageButtons);
-            this.views.notebook.on('notebookTurnStart', this.views.pageButtons.hideButtons, this.views.pageButtons);
-            this.views.notebook.on('notebookTurnEnd', function() {
-                var nb = this.views.notebook;
-                this.trigger('noteSelected', nb.currentPage, nb.getPrevPage(), nb.getNextPage());
-            }, this);
 
-            this.views.app.on('randomiseStyle', $.proxy(function() {
-                this.views.notebook.getCurrentNoteView().model.setRandomStyle();
-                this.views.pageButtons.affixButtons(this.views.notebook.getCurrentPageView());
-            }, this));
+            // this.views.app.on('randomiseStyle', $.proxy(function() {
+            //     this.views.notebook.getCurrentNoteView().model.setRandomStyle();
+            //     this.views.pageButtons.affixButtons(this.views.notebook.getCurrentPageView());
+            // }, this));
 
             var that = this;
-            // $.onshake(function() {
-            //     that.views.notebook.currentPage.noteRecto.model.setRandomStyle();
-            // });
+            $.onshake(function() {
+                that.views.notebook.currentPage.noteRecto.model.setRandomStyle();
+            });
 
             // this.collections.lists = new TaskLists();
             // this.views.listMenu = new ListMenuView({ collection: this.collections.lists });

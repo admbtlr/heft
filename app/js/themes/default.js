@@ -103,17 +103,19 @@ define([],
             var isFgDark    = isBgLight && Math.random() < 0.8,
                 isFgBlack   = isBgLight && !isFgDark,
                 isFgLight   = isBgDark && Math.random() < 0.5,
-                isFgWhite   = isBgDark && !isFgLight;
+                isFgWhite   = isBgDark && !isFgLight,
+                darknessFactor = Math.round(Math.random() * 3 + 1);
 
             if (isFgBlack) {
                 fgColor = [0, 0, 0];
             } else if (isFgWhite) {
                 fgColor = [255, 255, 255];
             } else {
+
                 fgColor = [
-                    Math.round((srcColor[0] + 3*(isFgDark ? darkMixer : lightMixer)) / 4),
-                    Math.round((srcColor[1] + 3*(isFgDark ? darkMixer : lightMixer)) / 4),
-                    Math.round((srcColor[2] + 3*(isFgDark ? darkMixer : lightMixer)) / 4)
+                    Math.round((srcColor[0] + darknessFactor*(isFgDark ? darkMixer : lightMixer)) / (darknessFactor + 1)),
+                    Math.round((srcColor[1] + darknessFactor*(isFgDark ? darkMixer : lightMixer)) / (darknessFactor + 1)),
+                    Math.round((srcColor[2] + darknessFactor*(isFgDark ? darkMixer : lightMixer)) / (darknessFactor + 1))
                 ];
             }
 

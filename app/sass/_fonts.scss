@@ -150,3 +150,16 @@
     font-style: normal;
 
 }
+
+// Source Code Pro
+
+@font-face {
+    font-family: 'SourceCodePro';
+    src: url('/font/SourceCodePro-Regular-webfont.woff') format('woff'),
+         url('/font/SourceCodePro-Regular-webfont.ttf') format('truetype'),
+         url('/font/SourceCodePro-Regular-webfont.svg#SourceCodePro') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+

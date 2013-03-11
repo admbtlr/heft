@@ -31,9 +31,9 @@ define(['models/note', 'collections/notes', 'views/note', 'stores/simplenote'],
                 this.on('selectNextNote', this.selectNextNote, this);
                 this.on('selectPreviousNote', this.selectPreviousNote, this);
 
-                this.$el.on('click', '.page-buttons .randomise-button', $.proxy(function(e) {
-                    this.trigger('randomiseStyle');
-                }, this));
+                // this.$el.on('click', '.page-buttons .randomise-button', $.proxy(function(e) {
+                //     this.trigger('randomiseStyle');
+                // }, this));
 
                 // $('#search-bar').keyup(function() {
                 //     var val = $('#search-bar').val();

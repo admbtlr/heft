@@ -2,23 +2,27 @@ requirejs.config({
     baseUrl: 'js',
 
     paths: {
-        text: 'libs/text'
+        underscore: 'libs/underscore',
+        backbone: 'libs/backbone',
+        text: 'libs/text',
+        mediator: 'libs/backbone-mediator',
+        showdown: 'libs/showdown'
     },
 
     // Sets the configuration for third party scripts that are not AMD compatible
     shim: {
-        'libs/showdown': {
+        showdown: {
             exports: 'Showdown'
         },
-        'libs/underscore': {
+        underscore: {
             exports: '_'
         },
-        'libs/backbone': {
-            deps: ['libs/underscore'],
+        backbone: {
+            deps: ['underscore'],
             exports: 'Backbone'
         },
         'app': {
-            deps: ['libs/underscore', 'libs/backbone', 'libs/showdown']
+            deps: ['underscore', 'backbone', 'mediator', 'showdown']
         }
     }
 });
