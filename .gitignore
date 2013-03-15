@@ -1,1 +1,3 @@
 *.sublime*
+*-ck.js
+.sass-cache/
