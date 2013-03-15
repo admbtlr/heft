@@ -10,7 +10,7 @@
     if (typeof window.DeviceMotionEvent !== 'undefined') {
         $.onshake = function(callb, sens) {
             // Shake sensitivity (a lower number is more sensitive)
-            var sensitivity = sens || 20,
+            var sensitivity = sens || 10,
                 checkDelay = 150,
                 callbackDelay = 500;
 
@@ -22,7 +22,7 @@
                 y2 = 0,
                 z2 = 0;
 
-            var checkDeviceMotion = function() {
+            var checkDeviceMotion = function(ignoreChange) {
                 var change = Math.abs((x1 - x2) + (y1 - y2) + (z1 - z2));
 
                 // Update new position
@@ -30,9 +30,9 @@
                 y2 = y1;
                 z2 = z1;
 
-                if (change > sensitivity) {
+                if (!ignoreChange && change > sensitivity) {
                     callb.call(window);
-                    setTimeout(checkDeviceMotion, callbackDelay);
+                    setTimeout(checkDeviceMotion, callbackDelay, true);
                 }
                 else {
                     setTimeout(checkDeviceMotion, checkDelay);

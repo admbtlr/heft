@@ -6,6 +6,7 @@ requirejs.config({
         backbone: 'libs/backbone',
         text: 'libs/text',
         mediator: 'libs/backbone-mediator',
+        localstorage: 'libs/backbone.localStorage',
         showdown: 'libs/showdown'
     },
 

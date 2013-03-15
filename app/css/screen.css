@@ -328,12 +328,6 @@ td {
   font-style: normal; }
 
 @font-face {
-  font-family: 'Blackout2AM';
-  src: url("/font/Blackout-2am-webfont.woff") format("woff"), url("/font/Blackout-2am-webfont.ttf") format("truetype"), url("/font/Blackout-2am-webfont.svg#Blackout2AM") format("svg");
-  font-weight: normal;
-  font-style: normal; }
-
-@font-face {
   font-family: 'CabinRegular';
   src: url("/font/Cabin-Regular-webfont.woff") format("woff"), url("/font/Cabin-Regular-webfont.ttf") format("truetype"), url("/font/Cabin-Regular-webfont.svg#CabinRegular") format("svg");
   font-weight: normal;
@@ -399,22 +393,22 @@ td {
   font-weight: normal;
   font-style: normal; }
 
-/* line 40, ../sass/screen.scss */
+/* line 45, ../sass/screen.scss */
 * {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-/* line 42, ../sass/screen.scss */
+/* line 47, ../sass/screen.scss */
 * {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
-/* line 53, ../sass/screen.scss */
+/* line 58, ../sass/screen.scss */
 .page-buttons a, .edit-buttons a {
   display: inline-block;
   text-decoration: none; }
 
-/* line 57, ../sass/screen.scss */
+/* line 62, ../sass/screen.scss */
 .page-buttons, .edit-buttons {
   -webkit-transition: 0.2s;
   width: 480px;
@@ -436,44 +430,45 @@ td {
   -o-transform: translateZ(0px);
   transform: translateZ(0px); }
 
-/* line 81, ../sass/screen.scss */
+/* line 86, ../sass/screen.scss */
 .edit-buttons {
   display: block;
   background-color: #f0f0f0; }
-  /* line 84, ../sass/screen.scss */
+  /* line 89, ../sass/screen.scss */
   .edit-buttons a {
     color: #333; }
-  /* line 87, ../sass/screen.scss */
+  /* line 92, ../sass/screen.scss */
   .edit-buttons a:hover {
     color: #141414; }
 
-/* line 91, ../sass/screen.scss */
+/* line 96, ../sass/screen.scss */
 .page-buttons a, .edit-buttons a {
   display: inline-block;
   width: 25%;
   text-align: center; }
 
-/* line 97, ../sass/screen.scss */
+/* line 102, ../sass/screen.scss */
 html {
   font-size: 62.5%; }
 
-/* line 101, ../sass/screen.scss */
+/* line 106, ../sass/screen.scss */
 html, body {
   height: 100%; }
 
-/* line 105, ../sass/screen.scss */
+/* line 110, ../sass/screen.scss */
 .main {
   width: 100%;
   height: 100%;
   min-height: 100%;
-  background: #666666 url("/img/cardboard_med.jpg"); }
+  background: #666666 url("/img/cardboard_med.jpg");
+  -webkit-overflow-scrolling: touch; }
 
-/* line 114, ../sass/screen.scss */
+/* line 120, ../sass/screen.scss */
 .header {
   width: 100%;
   height: 150px; }
 
-/* line 119, ../sass/screen.scss */
+/* line 125, ../sass/screen.scss */
 .header > h1 {
   display: none;
   text-transform: lowercase;
@@ -486,7 +481,7 @@ html, body {
   padding: 25px 10px;
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; }
 
-/* line 132, ../sass/screen.scss */
+/* line 138, ../sass/screen.scss */
 #search-bar {
   padding: 5px 10px;
   width: 540px;
@@ -498,11 +493,11 @@ html, body {
   border-radius: 20px;
   border: 1px; }
 
-/* line 144, ../sass/screen.scss */
+/* line 150, ../sass/screen.scss */
 #search-bar:focus {
   border: 1px; }
 
-/* line 148, ../sass/screen.scss */
+/* line 154, ../sass/screen.scss */
 .tiles {
   position: absolute;
   left: 0;
@@ -512,20 +507,20 @@ html, body {
   overflow-y: auto;
   background: #666666 url("/img/cardboard_med.jpg"); }
 
-/* line 160, ../sass/screen.scss */
+/* line 166, ../sass/screen.scss */
 .cf {
   display: table;
   clear: both; }
 
 @media only screen and (max-device-width: 480px) {
-  /* line 166, ../sass/screen.scss */
+  /* line 172, ../sass/screen.scss */
   .active-note, .edit-overlay {
     padding-top: 0px; } }
-/* line 171, ../sass/screen.scss */
+/* line 177, ../sass/screen.scss */
 body.kill-scrolling {
   overflow: hidden; }
 
-/* line 175, ../sass/screen.scss */
+/* line 181, ../sass/screen.scss */
 .active-note {
   position: absolute;
   width: 600px;
@@ -534,7 +529,7 @@ body.kill-scrolling {
   right: 0;
   overflow: hidden;
   padding: 30px 20px 20px; }
-  /* line 183, ../sass/screen.scss */
+  /* line 189, ../sass/screen.scss */
   .active-note .buttons {
     background-color: rgba(0, 0, 0, 0.3);
     -webkit-border-radius: 0 50px 0 0;
@@ -545,26 +540,26 @@ body.kill-scrolling {
     width: 500px;
     height: 50px;
     margin-top: 50px; }
-  @media only screen and (max-width: 480px) {
-    /* line 175, ../sass/screen.scss */
+  @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71), screen and (device-aspect-ratio: 3 / 4) {
+    /* line 181, ../sass/screen.scss */
     .active-note {
       top: 0px;
       padding: 0;
       width: 480px; } }
 
-/* line 196, ../sass/screen.scss */
+/* line 202, ../sass/screen.scss */
 .note-edit {
   position: absolute;
   top: 0;
   width: 100%;
   height: 100%; }
 
-/* line 203, ../sass/screen.scss */
+/* line 209, ../sass/screen.scss */
 #note-edit-form {
   width: 100%;
   height: 100%; }
 
-/* line 207, ../sass/screen.scss */
+/* line 213, ../sass/screen.scss */
 #note-edit-form textarea {
   -webkit-user-select: text;
   -moz-user-select: -moz-text;
@@ -577,12 +572,16 @@ body.kill-scrolling {
   color: #141414;
   border: 0px;
   font: 18px/26px "SourceCodePro"; }
+  @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71), screen and (device-aspect-ratio: 3 / 4) {
+    /* line 213, ../sass/screen.scss */
+    #note-edit-form textarea {
+      font: 24px/32px "SourceCodePro"; } }
 
-/* line 220, ../sass/screen.scss */
+/* line 229, ../sass/screen.scss */
 #note-edit-form textarea:focus {
   outline: 0; }
 
-/* line 225, ../sass/screen.scss */
+/* line 234, ../sass/screen.scss */
 .active-note {
   -webkit-perspective: 1000;
   -moz-perspective: 1000;
@@ -590,7 +589,7 @@ body.kill-scrolling {
   -o-perspective: 1000;
   perspective: 1000; }
 
-/* line 228, ../sass/screen.scss */
+/* line 237, ../sass/screen.scss */
 .flip-holder {
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
@@ -602,7 +601,7 @@ body.kill-scrolling {
   -o-transition: all 0.2s linear;
   transition: all 0.2s linear; }
 
-/* line 233, ../sass/screen.scss */
+/* line 242, ../sass/screen.scss */
 .flip-me {
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
@@ -610,7 +609,7 @@ body.kill-scrolling {
   -o-transform: rotateY(180deg);
   transform: rotateY(180deg); }
 
-/* line 236, ../sass/screen.scss */
+/* line 245, ../sass/screen.scss */
 .flip-face {
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
@@ -624,7 +623,7 @@ body.kill-scrolling {
   width: 100%;
   height: 100%; }
 
-/* line 246, ../sass/screen.scss */
+/* line 255, ../sass/screen.scss */
 .tile {
   display: block;
   margin: 1px 1px 0 0;
@@ -632,7 +631,7 @@ body.kill-scrolling {
   float: left;
   position: relative; }
 
-/* line 254, ../sass/screen.scss */
+/* line 263, ../sass/screen.scss */
 .tile-spinner {
   -webkit-transform: rotateZ(360deg);
   -moz-transform: rotateZ(360deg);
@@ -640,7 +639,7 @@ body.kill-scrolling {
   -o-transform: rotateZ(360deg);
   transform: rotateZ(360deg); }
 
-/* line 258, ../sass/screen.scss */
+/* line 267, ../sass/screen.scss */
 .tile > h1 {
   display: none;
   float: left;
@@ -651,7 +650,7 @@ body.kill-scrolling {
   color: #1e1e00;
   margin: 0; }
 
-/* line 269, ../sass/screen.scss */
+/* line 278, ../sass/screen.scss */
 .tile .modify-date {
   border-radius: 5px 0 5px 0;
   font-weight: normal;
@@ -664,7 +663,7 @@ body.kill-scrolling {
   color: #c8c8c8;
   margin: 0; }
 
-/* line 282, ../sass/screen.scss */
+/* line 291, ../sass/screen.scss */
 .tiles .selected-note {
   -webkit-transition: 0.4s ease-out;
   -moz-transition: 0.4s ease-out;
@@ -673,7 +672,7 @@ body.kill-scrolling {
   position: relative;
   z-index: 5; }
 
-/* line 293, ../sass/screen.scss */
+/* line 302, ../sass/screen.scss */
 .porthole {
   padding: 0;
   padding: 0;
@@ -690,7 +689,7 @@ body.kill-scrolling {
   border-radius: 5px; }
 
 /* higher specificity, to override .porthole styles for the selected note */
-/* line 310, ../sass/screen.scss */
+/* line 319, ../sass/screen.scss */
 .active-note-display {
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px 0;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 0 10px 0;
@@ -702,7 +701,7 @@ body.kill-scrolling {
   border-radius: 10px;
   border: 1px solid #999; }
 
-/* line 316, ../sass/screen.scss */
+/* line 325, ../sass/screen.scss */
 .active-note-display .note {
   -webkit-transform: scale(1);
   -moz-transform: scale(1);
@@ -718,52 +717,53 @@ body.kill-scrolling {
   width: 100%;
   height: 100%; }
 
-/* line 324, ../sass/screen.scss */
+/* line 333, ../sass/screen.scss */
 .porthole .note {
   -webkit-transform: scale(0.5);
   -webkit-transform-origin: -10% -10%;
   -webkit-transition: -webkit-transform .5s;
   overflow: hidden; }
 
-/* line 331, ../sass/screen.scss */
+/* line 340, ../sass/screen.scss */
 .note {
   box-sizing: border-box;
   width: 480px;
   height: 690px;
   margin: 0 auto;
-  overflow: scroll;
+  overflow-x: none;
+  overflow-y: scroll;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   -ms-backface-visibility: hidden;
   -o-backface-visibility: hidden;
   backface-visibility: hidden; }
-  /* line 339, ../sass/screen.scss */
+  /* line 349, ../sass/screen.scss */
   .note p {
     -webkit-hyphens: auto; }
-  @media only screen and (max-width: 480px) {
-    /* line 331, ../sass/screen.scss */
+  @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71), screen and (device-aspect-ratio: 3 / 4) {
+    /* line 340, ../sass/screen.scss */
     .note {
       -webkit-overflow-scrolling: touch;
       -webkit-transform: translateZ(0px); } }
 
-/* line 350, ../sass/screen.scss */
+/* line 360, ../sass/screen.scss */
 .note p {
   padding: 0;
   margin: 0; }
 
-/* line 355, ../sass/screen.scss */
+/* line 365, ../sass/screen.scss */
 .note h1:first-of-type {
   margin-top: 0px; }
 
-/* line 359, ../sass/screen.scss */
+/* line 369, ../sass/screen.scss */
 .first-line-bold p:first-child:first-line {
   font-weight: bold; }
 
-/* line 363, ../sass/screen.scss */
+/* line 373, ../sass/screen.scss */
 .first-line-larger p:first-child:first-line {
   font-size: 180%; }
 
-/* line 370, ../sass/screen.scss */
+/* line 380, ../sass/screen.scss */
 #book-holder {
   -webkit-perspective: 2000;
   -moz-perspective: 2000;
@@ -771,18 +771,18 @@ body.kill-scrolling {
   -o-perspective: 2000;
   perspective: 2000; }
 
-/* line 374, ../sass/screen.scss */
+/* line 384, ../sass/screen.scss */
 .book {
   position: relative;
   width: 960px;
   height: 690px;
   overflow: hidden; }
-  @media only screen and (max-width: 480px) {
-    /* line 374, ../sass/screen.scss */
+  @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71), screen and (device-aspect-ratio: 3 / 4) {
+    /* line 384, ../sass/screen.scss */
     .book {
       left: -480px; } }
 
-/* line 384, ../sass/screen.scss */
+/* line 394, ../sass/screen.scss */
 .page {
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
@@ -803,7 +803,7 @@ body.kill-scrolling {
   -ms-user-select: none;
   user-select: none; }
 
-/* line 395, ../sass/screen.scss */
+/* line 405, ../sass/screen.scss */
 .side {
   box-sizing: border-box;
   position: absolute;
@@ -817,7 +817,7 @@ body.kill-scrolling {
   -o-backface-visibility: hidden;
   backface-visibility: hidden; }
 
-/* line 406, ../sass/screen.scss */
+/* line 416, ../sass/screen.scss */
 .verso {
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
@@ -826,11 +826,11 @@ body.kill-scrolling {
   transform: rotateY(180deg);
   background-color: #ffe; }
 
-/* line 411, ../sass/screen.scss */
+/* line 421, ../sass/screen.scss */
 .recto {
   background-color: #ffe; }
 
-/* line 415, ../sass/screen.scss */
+/* line 425, ../sass/screen.scss */
 .flipped {
   -webkit-transform: rotateY(-180deg);
   -moz-transform: rotateY(-180deg);
@@ -838,6 +838,6 @@ body.kill-scrolling {
   -o-transform: rotateY(-180deg);
   transform: rotateY(-180deg); }
 
-/* line 419, ../sass/screen.scss */
+/* line 429, ../sass/screen.scss */
 #page-store {
   display: none; }

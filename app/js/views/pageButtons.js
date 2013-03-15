@@ -25,12 +25,12 @@ define(['text!templates/page-buttons.html'],
                 this.$el.on('click', '.randomise-button', function() {
                     this.app.trigger('randomStyle');
                 });
-                Backbone.Mediator.sub('noteselected', this.affixButtons, this);
-                Backbone.Mediator.sub('note:styleupdated', this.affixButtons, this);
-                Backbone.Mediator.sub('notebook:mouseclick', this.toggleButtons, this);
-                Backbone.Mediator.sub('notebook:pageturnstart', this.hideButtons, this);
-                Backbone.Mediator.sub('notebook:mouseswipe', this.hideButtons, this);
-                Backbone.Mediator.sub('notebook:mousescroll', this.hideButtons, this);
+                // Backbone.Mediator.sub('noteselected', this.affixButtons, this);
+                // Backbone.Mediator.sub('note:styleupdated', this.affixButtons, this);
+                // Backbone.Mediator.sub('notebook:mouseclick', this.toggleButtons, this);
+                // Backbone.Mediator.sub('notebook:pageturnstart', this.hideButtons, this);
+                // Backbone.Mediator.sub('notebook:mouseswipe', this.hideButtons, this);
+                // Backbone.Mediator.sub('notebook:mousescroll', this.hideButtons, this);
             },
 
             affixButtons    : function(page) {

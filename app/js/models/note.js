@@ -19,11 +19,13 @@ define(['themes/default'],
             },
 
             setRandomStyle  : function() {
-                this.set('pageFitted', false);
-                // this.set('style', this.makeRandomStyle());
-                this.set('style', theme.getTheme(this));
-                this.save();
-            },
+                if (this.get('stylable')) {
+                    this.set('pageFitted', false);
+                    // this.set('style', this.makeRandomStyle());
+                    this.set('style', theme.getTheme(this));
+                    this.save();
+                }
+            }
 
 
         });

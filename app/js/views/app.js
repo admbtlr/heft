@@ -1,6 +1,6 @@
-define(['models/note', 'collections/notes', 'views/note', 'stores/simplenote'],
+define(['models/note', 'collections/notes', 'views/note'/*, 'stores/simplenote'*/],
 
-    function(Note, Notes, NoteView, SimpleNoteStore) {
+    function(Note, Notes, NoteView/*, SimpleNoteStore*/) {
 
         var AppView = Backbone.View.extend({
             el          : $('.main'),
@@ -202,9 +202,9 @@ define(['models/note', 'collections/notes', 'views/note', 'stores/simplenote'],
                 if (!this.selectedNote) {
                     return;
                 }
-                var index = this.app.notes.indexOf(this.selectedNote);
-                if (typeof index !== 'undefined' && index < this.app.notes.length - 1) {
-                    this.selectNote(this.app.notes.models[index+1]);
+                var index = this.app.collections.notes.indexOf(this.selectedNote);
+                if (typeof index !== 'undefined' && index < this.app.collections.notes.length - 1) {
+                    this.selectNote(this.app.collections.notes.models[index+1]);
                 }
             },
 
@@ -212,9 +212,9 @@ define(['models/note', 'collections/notes', 'views/note', 'stores/simplenote'],
                 if (!this.selectedNote) {
                     return;
                 }
-                var index = this.app.notes.indexOf(this.selectedNote);
+                var index = this.app.collections.notes.indexOf(this.selectedNote);
                 if (typeof index !== 'undefined' && index > 0) {
-                    this.selectNote(this.app.notes.models[index-1]);
+                    this.selectNote(this.app.collections.notes.models[index-1]);
                 }
             },
 

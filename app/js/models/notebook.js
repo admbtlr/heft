@@ -1,11 +1,14 @@
-define([],
+define(['models/note'],
 
-    function() {
+    function(Note) {
 
         var Notebook = Backbone.Model.extend({
 
             initialize  : function(notes) {
                 this.notes = notes;
+                if (notes.length === 0) {
+                    notes.add(new Note({ content: '' }));
+                }
                 this.currentNote = notes.at(0);
             },
 
@@ -16,10 +19,9 @@ define([],
             getNextNote : function(n) {
                 var note = n || this.currentNote;
                 if (this.isLastNote(note)) {
-                    return null;
-                } else {
-                    return this.notes.at(this.notes.indexOf(note) + 1);
+                    this.notes.add(new Note({ content: '' }));
                 }
+                return this.notes.at(this.notes.indexOf(note) + 1);
             },
 
             getPrevNote : function(n) {

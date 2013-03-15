@@ -15,7 +15,7 @@ define(['text!templates/page.html', 'views/note'],
 
             render      : function() {
                 // TODO - add noteVerso
-                this.$rectoEl = $('<div></div>').addClass('side recto').attr('id', this.noteRecto.model.get('key'));
+                this.$rectoEl = $('<div></div>').addClass('side recto')/*.attr('id', this.noteRecto.model.get('key'))*/;
                 this.noteRecto.$el = this.$rectoEl;
                 this.noteRecto.render();
                 this.$el.append(this.$rectoEl);

@@ -1,1 +1,1 @@
-define(["models/note"],function(e){var t=Backbone.Collection.extend({model:e,setStore:function(e){this.store=e;e.on("gotNote",this.createOrUpdateNote,this)},createOrUpdateNote:function(t){var n=new e(t);n.set("id",n.get("key"));this.add(n)}});return t});
+define(["models/note","localstorage"],function(e){var t=Backbone.Collection.extend({model:e,localStorage:new Backbone.LocalStorage("notes"),initialize:function(){this.fetch()}});return t});

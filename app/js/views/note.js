@@ -15,21 +15,20 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
             initialize  : function() {
                 // listen to the model, re-render on changes
                 this.model.bind('change:style change:content', this.render, this);
-
-                // no style? deal with it!
-                if (!this.model.get('style')) {
-                    this.model.setRandomStyle();
-                }
             },
 
             render      : function() {
                 var html = this.template(this.toJSON());
-                if (this.$el.children('.note').length > 0) {
-                    this.$el.children('.note').replaceWith($(html));
+                if (this.model.get('content').length === 0) {
+                    this.showEditView();
                 } else {
-                    this.$el.html(html);
+                    if (this.$el.children('.note').length > 0) {
+                        this.$el.children('.note').replaceWith($(html));
+                    } else {
+                        this.$el.html(html);
+                    }
+                    this.renderStyle();
                 }
-                this.renderStyle();
                 return this;
             },
 
@@ -51,15 +50,27 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 });
 
                 $textArea = this.$el.find('textarea');
-                $textArea.focus();
+                // wait till $el has been added to the page so there's something to focus on...
+                window.setTimeout(function() {
+                    $textArea.focus();
+                }, 550);
                 $textArea.one('blur', $.proxy(this.hideEditView, this));
             },
 
             hideEditView    : function() {
                 var $editView = this.$el.find('.note-edit'),
-                    $textArea = $editView.find('textarea');
-                this.model.set('content', $textArea.val());
-                $editView.remove();
+                    $textArea = $editView.find('textarea'),
+                    val = $textArea.val();
+
+                if (val.length === 0) {
+                    Backbone.Mediator.pub('note:predestroy', this);
+                    this.model.destroy();
+                } else {
+                    this.model.set('stylable', true);
+                    this.model.set('content', val);
+                    this.model.save();
+                    $editView.remove();
+                }
             },
 
             renderStyle     : function() {
@@ -68,6 +79,12 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     styleMap = {},
                     classesToAdd = [],
                     classesToRemove = [];
+
+                // no style? deal with it!
+                if (!style) {
+                    this.model.setRandomStyle();
+                    style = this.model.get('style');
+                }
 
                 // clear all existing css
                 $page.attr('style', '');
@@ -97,15 +114,14 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                             selector = '';
                         // build selector
                         _.each(selectors, function(s) { selector += s+' '; });
-                        $page.find(selector).css(context.styleHyphenFormat(pieces[1]), (_.isArray(style[key]) ? context.arrayToRGB(style[key]) : style[key]));
+                        // $page.find(selector).css(context.styleHyphenFormat(pieces[1]), (_.isArray(style[key]) ? context.arrayToRGB(style[key]) : style[key]));
+                        $page.find(selector).css(context.styleHyphenFormat(pieces[1]), style[key]);
                     } else {
                         styleMap[key] = style[key];
                         // $page.css(context.styleHyphenFormat(key), style[key]);
                     }
                 });
 
-                styleMap.backgroundColor = this.arrayToRGB(style.bgColor);
-                styleMap.color = this.arrayToRGB(style.fgColor);
                 $page.css(styleMap);
                 $page.addClass(_.reduce(classesToAdd, function(memo, klass) { return memo+klass+' '; }, ''));
                 $page.removeClass(_.reduce(classesToRemove, function(memo, klass) { return memo+klass+' '; }, ''));
@@ -115,10 +131,6 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     this.fitToPage();
                 }
 
-            },
-
-            arrayToRGB  : function(color) {
-                return 'rgb('+color[0]+','+color[1]+','+color[2]+')';
             },
 
             addOrRemoveSpans    : function($page, styleMap) {
@@ -153,21 +165,23 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     pMarginTopNum = Number(this.model.get('style').p__marginTop.slice(0, -2)),
                     lineHeight = this.model.get('style').lineHeight,
                     paddingNum = Number(this.model.get('style').padding.slice(0, -2)),
-                    height = this.outerHeight($page);
-                console.log($page.css('font-size')+'::'+$page.css('line-height')+'::'+height);
-                while (height > ($page.height()) && fontSizeNum > 24) {
-                    console.log($page.css('font-size')+'::'+$page.css('line-height')+'::'+height);
+                    height = this.outerHeight($page),
+                    width = this.outerWidth($page);
+                console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum);
+                while ((height > $page.height() || width > $page.width()) && fontSizeNum > 24) {
+                    console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum);
                     height = 0;
                     fontSizeNum = Math.round(fontSizeNum * 0.9);
-                    h1FontSizeNum = Math.round(h1FontSizeNum * 0.8);
+                    h1FontSizeNum = Math.round(h1FontSizeNum * 0.9);
                     pMarginTopNum = Math.round(pMarginTopNum * 0.9);
                     paddingNum = Math.round(paddingNum * 0.8);
                     $page.css('font-size', fontSizeNum + 'px');
                     $page.css('padding', paddingNum + 'px');
                     $page.children('h1').css('font-size', h1FontSizeNum+'em');
                     height = this.outerHeight($page);
+                    width = this.outerWidth($page);
                 }
-                console.log($page.css('font-size')+'::'+$page.css('line-height')+'::'+height);
+                console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum);
                 var remainder = $page.height() - height,
                     paddingTop = remainder > 0 ? [paddingNum, remainder / 2.0, remainder-paddingNum][Math.round(Math.random() * 2)] : Math.round(Math.random() * 30);
                 // $($page.children()[0]).css('margin-top', marginTop);
@@ -197,6 +211,19 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 return height;
             },
 
+            outerWidth  : function($el) {
+                var width = 0,
+                    padding = Number($el.css('padding').slice(0, -2)) * 2,
+                    borderWidth = Number($el.css('border-width').slice(0, -2)) * 2;
+                $el.children().each(function() {
+                    var w = this.scrollWidth;
+                    if (w > width) {
+                        width = w;
+                    }
+                });
+                return width + padding + borderWidth;
+            },
+
             toJSON    : function(noMarkdown) {
                 if (noMarkdown) {
                     return {
@@ -206,7 +233,8 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     return {
                         'title'     : this.smarten(this.model.get('content').split('\n')[0].substr(0, 30)),
                         'content'   : this.makeLinks(converter.makeHtml('#'+this.smarten(this.model.get('content')))),
-                        'modifyDate': this.model.getModifyDateAsString()
+                        'modifyDate': this.model.getModifyDateAsString(),
+                        'id'        : this.model.cid
                     };
                 }
             },

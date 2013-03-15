@@ -1,21 +1,27 @@
-define(['models/note'],
+define(['models/note', 'localstorage'],
 
     function(Note) {
-        
+
         var Notes = Backbone.Collection.extend({
-            
+
             model: Note,
 
-            setStore    : function(store) {
-                this.store = store;
-                store.on('gotNote', this.createOrUpdateNote, this);
-            },
+            localStorage: new Backbone.LocalStorage('notes'),
 
-            createOrUpdateNote  : function(n) {
-                var note = new Note(n);
-                note.set('id', note.get('key'));
-                this.add(note);
+            initialize  : function() {
+                this.fetch();
             }
+
+            // setStore    : function(store) {
+            //     this.store = store;
+            //     store.on('gotNote', this.createOrUpdateNote, this);
+            // },
+
+            // createOrUpdateNote  : function(n) {
+            //     var note = new Note(n);
+            //     note.set('id', note.get('key'));
+            //     this.add(note);
+            // }
         });
 
         return Notes;

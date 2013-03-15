@@ -43,10 +43,17 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
 
             initialize  : function(conf) {
                 this.app = conf.app;
-                // wait and find out whether we're mousing or touching and then bind events as necessary
-                this.$el.on('touchstart', '.recto', $.proxy(this.initTouch, this));
-                this.$el.on('mousedown', '.recto', $.proxy(this.initMouse, this));
 
+                // bind events depending on whether this is a touch device
+                if (!!('ontouchstart' in window)) {
+                    this.initTouch();
+                } else {
+                    this.initMouse();
+                }
+
+                Backbone.Mediator.sub('note:predestroy', function(nv) {
+                    this.removePage.apply(this, [nv]);
+                }, this);
                 Backbone.Mediator.sub('note:randomisestyle', function() {
                     this.getCurrentNoteView().model.setRandomStyle();
                     Backbone.Mediator.pub('note:styleupdated', this.currentPage);
@@ -75,10 +82,29 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 return this.currentPage;
             },
 
+            // this is called before the note is destroyed
+            // it handles turning to another page
+            removePage  : function(noteView) {
+                this.pagePendingDestruction = _.find(this.pages, function(p) {
+                    return p.getNote() == noteView;
+                });
+                this.pages = _.reject(this.pages, function(p) {
+                   return p == this.pagePendingDestruction;
+                });
+                if (this.pagePendingDestruction == this.currentPage) {
+                    if (this.isFirst()) {
+                        this.turnForward();
+                    } else {
+                        this.currentPage = this.getPrevPage();
+                        this.turnBack();
+                    }
+                }
+            },
+
             // TODO - add verso
             createPage  : function(note) {
                 var page = new PageView(new NoteView({model: note}));
-                page.$el = $('<div></div>').addClass('page');
+                page.$el = $('<div></div>').addClass('page').addClass(note.cid);
                 page.render();
                 this.pages.push(page);
                 return page;
@@ -94,8 +120,8 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     return null;
                 } else {
                     nextPage = _.find(this.pages, function(p) {
-                        return p.noteRecto.model.get('key') == nextNote.get('key') ||
-                                (p.noteVerso && p.noteVerso.model.get('key') == nextNote.get('key'));
+                        return p.noteRecto.model == nextNote ||
+                                (p.noteVerso && p.noteVerso.model == nextNote);
                     });
                     if (!nextPage) {
                         nextPage = this.createPage(nextNote);
@@ -114,8 +140,8 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     return null;
                 } else {
                     prevPage = _.find(this.pages, function(p) {
-                        return p.noteRecto.model.get('key') == prevNote.get('key') ||
-                                (p.noteVerso && p.noteVerso.model.get('key') == prevNote.get('key'));
+                        return p.noteRecto.model == prevNote ||
+                                (p.noteVerso && p.noteVerso.model == prevNote);
                     });
                     if (!prevPage) {
                         prevPage = this.createPage(prevNote);
@@ -124,48 +150,182 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 }
             },
 
-            initTouch   : function(e) {
+            // TODO
+            isLast      : function(p) {
+                var page = p || this.currentPage,
+                    note = page.model;
+                return this.model.isLastNote(note);
+                // return this.getNextPage(page) === null;
+            },
+
+            // TODO
+            isFirst      : function(p) {
+                var page = p || this.currentPage,
+                    note = page.model;
+                return this.model.isFirstNote(note);
+            },
+
+            // TODO - verso
+            getAdjacentPages            : function(arg1, arg2) {
+                var page = _.isArray(arg1) ? arg1 : this.currentPage,
+                    isFwd = _.isBoolean(arg1) ? arg1 : (_.isUndefined(arg2) ? true : arg2),
+                    nextPage = isFwd ? this.getNextPage(page) : this.getPrevPage(page),
+                    prevPage = isFwd ? this.getPrevPage(page) : this.getNextPage(page);
+                return [nextPage, prevPage];
+            },
+
+            /* Page turning stuff */
+
+            turnForward                 : function() {
+                this.initialPageRotation = this.currentPageRotation = 0;
+                this.turnPage(true);
+            },
+
+            turnBack                    : function() {
+                this.initialPageRotation = this.currentPageRotation = -180;
+                this.turnPage(false);
+            },
+
+            initiatePageTurn            : function(isFwd) {
+                var pages = this.getAdjacentPages(isFwd),
+                    nextPage = pages[0],
+                    prevPage = pages[1];
+
+                Backbone.Mediator.pub('notebook:pageturnstart');
+
+                this.isTurning = true;
+
+                this.currentPage.sideCss('box-shadow', '10px 0 5px rgba(0, 0, 0, 0.3)', 'recto');
+                this.currentPage.sideCss('box-shadow', '-10px 0 5px rgba(0, 0, 0, 0.3)', 'verso');
+                
+                if (isFwd) {
+                    this.currentPageRotation = this.initialPageRotation = 0;
+                } else if (!this.isDoubleSpread) {
+                    this.currentPageRotation = -91;
+                    this.initialPageRotation = -180;
+                } else {
+                    this.currentPageRotation = this.initialPageRotation = -180;
+                }
+
+                // make sure next page is visible and immediately below current page
+                if (nextPage) {
+                    nextPage.$el.remove().insertBefore(this.currentPage.$el).show();
+                }
+                if (prevPage) {
+                    prevPage.$el.remove().insertBefore(this.currentPage.$el).show();
+                }
+            },
+
+            concludePageTurn            : function(isFwd) {
+                var pages = this.getAdjacentPages(isFwd),
+                    nextPage = pages[0],
+                    prevPage = pages[1];
+                this.currentPage.css('-webkit-transition', '-webkit-transform 0.5s ease-in-out'); // TODO
+                this.currentPage.sideCss('box-shadow', '');
+                if (this.initialPageRotation === this.currentPageRotation) {
+                    // put the next page back into the page store
+                    if (nextPage.length) {
+                        nextPage.$el.remove().appendTo('#page-store');
+                    }
+                } else {
+                    // once we've turned the page, the note is no longer stylable
+                    if (!isFwd) {
+                        prevPage.getNote().model.set('stylable', false);
+                    } else {
+                        this.currentPage.getNote().model.set('stylable', false);
+                    }
+
+                    // move nextPage to front, previous previous page to page-store
+                    if (prevPage) {
+                        prevPage.$el.remove().appendTo('#page-store');
+                    }
+                    if (nextPage) {
+                        if (isFwd) {
+                            this.currentPage.$el.remove().insertBefore(nextPage.$el);
+                        } else {
+                            this.currentPage.$el.remove().insertAfter(nextPage.$el);
+                        }
+                    }
+                    // if we just turned back, the currentPage stays the same
+                    // if we turned forward, increment it
+                    if (isFwd) {
+                        this.currentPage = nextPage;
+                    }
+                }
+                this.isTurning = false;
+                this.currentPageRotation = 0;
+                this.initialPageRotation = '';
+                if (this.pagePendingDestruction) {
+                    this.pagePendingDestruction.$el.remove();
+                    this.pagePendingDestruction = null;
+                }
+                Backbone.Mediator.pub('notebook:pageturnend');
+                Backbone.Mediator.pub('noteselected', this.currentPage);
+            },
+
+            turnPage                    : function(isFwd) {
+                var that = this;
+                this.initiatePageTurn(isFwd);
+                this.rotatePage(isFwd ? -180 : (180 + this.currentPageRotation), function() {
+                    that.concludePageTurn(isFwd);
+                });
+            },
+
+            rotatePage                  : function(degrees, callback) {
+                var that = this;
+                if (degrees === 0) {
+                    if (callback) {
+                        callback.call();
+                    }
+                } else {
+                    this.currentPageRotation = this.currentPageRotation + degrees;
+                    if (callback) {
+                        this.currentPage.$el.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function() {
+                            that.currentPage.$el.unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd");
+                            callback.call();
+                        });
+                    }
+                    this.currentPage.css('-webkit-transform', 'rotateY('+this.currentPageRotation+'deg)');
+                }
+            },
+
+            /* Tap/Mouse event stuff */
+
+            initTouch   : function() {
                 var that = this;
                 this.$el.off('touchstart');
                 this.$el.off('mousedown');
                 this.$el.on('touchstart', '.recto', function(e) { that.pointerStart(e); });
                 this.$el.on('touchmove', '.book', function(e) { that.pointerMove(e); });
                 this.$el.on('touchend', function(e) { that.pointerEnd(e); });
-                this.fireEvent(e);
             },
 
-            initMouse   : function(e) {
+            initMouse   : function() {
                 var that = this;
                 this.$el.off('touchstart');
                 this.$el.off('mousedown');
                 this.$el.on('mousedown', '.recto', function(e) { that.pointerStart(e); });
                 this.$el.on('mousemove', '.book', function(e) { that.pointerMove(e); });
                 this.$el.on('mouseup', function(e) { that.pointerEnd(e); });
-                this.fireEvent(e);
                 // this.$el.on('mouseout', function(e) { that.pointerEnd(e); });
             },
 
-            fireEvent   : function(e) {
-                var evt = document.createEvent("HTMLEvents");
-                evt.initEvent(e.type, false, true);
-                e.currentTarget.dispatchEvent(evt);
-            },
-
             pointerStart    : function(e) {
-                console.log('start');
-                var a = this.analysePointerEvent(e);
+                var a = this.analysePointerEvent(e),
+                    that = this;
                 if (!a.isTouch) {
                     this.isMouseDown = true;
                 }
                 this.mouseX = a.xCoord;
                 this.mouseY = a.yCoord;
-                this.downTime = Date.now();
+
+                this.longClickTimerId = window.setTimeout(that.handleLongClickEvent, 1000);
+
                 Backbone.Mediator.pub('notebook:mousedown');
                 // this.initiateSwipeEvent(a.xCoord);
             },
 
             pointerMove     : function(e) {
-                console.log('move');
                 if (this.isScrolling) {
                     return;
                 }
@@ -177,26 +337,29 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 if (a.isTouch) {
                     if (yDistance > minDistance && !this.isDragging) {
                         this.isScrolling = true;
+                        this.endLongClickTimer();
                         Backbone.Mediator.pub('notebook:mousescroll');
                     } else if (xDistance > minDistance) {
                         e.preventDefault();
                         this.continueSwipeEvent(a.xCoord);
+                        this.endLongClickTimer();
                         Backbone.Mediator.pub('notebook:mouseswipe');
                     }
                 } else {
                     if (this.isMouseDown && xDistance > minDistance) {
                         this.continueSwipeEvent(a.xCoord);
+                        this.endLongClickTimer();
                         Backbone.Mediator.pub('notebook:mouseswipe');
                     }
                 }
             },
 
             pointerEnd      : function(e) {
-                console.log('end');
                 if (this.isScrolling) {
                     this.isScrolling = false;
                     return;
                 }
+                this.endLongClickTimer();
                 var a = this.analysePointerEvent(e),
                     distance = Math.abs(a.xCoord - this.mouseX),
                     // minimum x movement in % of page width to count as a swipe
@@ -246,18 +409,6 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 return normalised;
             },
 
-            // TODO
-            isLast      : function(p) {
-                var page = p || this.currentPage;
-                return this.getNextPage() === null;
-            },
-
-            // TODO
-            isFirst      : function(p) {
-                var page = p || this.currentPage;
-                return this.getPrevPage() === null;
-            },
-
             handleClickEvent    : function(e) {
                 if (!this.isTurning) {
                     if (this.mouseX < 0.2) {
@@ -265,8 +416,6 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                         this.turnBack();
                     } else if (this.mouseX > 0.8) {
                         this.turnForward();
-                    } else if (Date.now() - this.downTime > 3000) {
-                        Backbone.Mediator.pub('notebook:mouselongclick');
                     } else {
                         Backbone.Mediator.pub('notebook:mouseclick');
                     }
@@ -280,6 +429,18 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                         // this.turnForward();
                     // }
                 }
+            },
+
+            endLongClickTimer   : function() {
+                if (this.longClickTimerId) {
+                    window.clearTimeout(this.longClickTimerId);
+                    this.longClickTimerId = undefined;
+                }
+            },
+
+            handleLongClickEvent    : function() {
+                this.isMouseDown = false;
+                Backbone.Mediator.pub('notebook:mouselongclick');
             },
 
             // initiateSwipeEvent  : function(xCoord) {
@@ -349,119 +510,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     that.concludePageTurn(isFwd);
                 });
                 this.isDragging = false;
-            },
-
-            // TODO - verso
-            getAdjacentPages            : function(arg1, arg2) {
-                var page = _.isArray(arg1) ? arg1 : this.currentPage,
-                    isFwd = _.isBoolean(arg1) ? arg1 : (_.isUndefined(arg2) ? true : arg2),
-                    nextPage = isFwd ? this.getNextPage(page) : this.getPrevPage(page),
-                    prevPage = isFwd ? this.getPrevPage(page) : this.getNextPage(page);
-                return [nextPage, prevPage];
-            },
-
-            turnForward                 : function() {
-                this.initialPageRotation = this.currentPageRotation = 0;
-                this.turnPage(true);
-            },
-
-            turnBack                    : function() {
-                this.initialPageRotation = this.currentPageRotation = -180;
-                this.turnPage(false);
-            },
-
-            initiatePageTurn            : function(isFwd) {
-                var pages = this.getAdjacentPages(isFwd),
-                    nextPage = pages[0],
-                    prevPage = pages[1];
-
-                Backbone.Mediator.pub('notebook:pageturnstart');
-
-                this.isTurning = true;
-
-                this.currentPage.sideCss('box-shadow', '10px 0 5px rgba(0, 0, 0, 0.3)', 'recto');
-                this.currentPage.sideCss('box-shadow', '-10px 0 5px rgba(0, 0, 0, 0.3)', 'verso');
-                
-                if (isFwd) {
-                    this.currentPageRotation = this.initialPageRotation = 0;
-                } else if (!this.isDoubleSpread) {
-                    this.currentPageRotation = -91;
-                    this.initialPageRotation = -180;
-                } else {
-                    this.currentPageRotation = this.initialPageRotation = -180;
-                }
-
-                // make sure next page is visible and immediately below current page
-                if (nextPage) {
-                    nextPage.$el.remove().insertBefore(this.currentPage.$el).show();
-                }
-                if (prevPage) {
-                    prevPage.$el.remove().insertBefore(this.currentPage.$el).show();
-                }
-            },
-
-            concludePageTurn            : function(isFwd) {
-                var pages = this.getAdjacentPages(isFwd),
-                    nextPage = pages[0],
-                    prevPage = pages[1];
-                this.currentPage.css('-webkit-transition', '-webkit-transform 0.5s ease-in-out'); // TODO
-                this.currentPage.sideCss('box-shadow', '');
-                if (this.initialPageRotation === this.currentPageRotation) {
-                    // put the next page back into the page store
-                    if (nextPage.length) {
-                        nextPage.$el.remove().appendTo('#page-store');
-                    }
-                } else {
-                    // move nextPage to front, previous previous page to page-store
-                    if (prevPage) {
-                        prevPage.$el.remove().appendTo('#page-store');
-                    }
-                    if (nextPage) {
-                        if (isFwd) {
-                            this.currentPage.$el.remove().insertBefore(nextPage.$el);
-                        } else {
-                            this.currentPage.$el.remove().insertAfter(nextPage.$el);
-                        }
-                    }
-                    // if we just turned back, the currentPage stays the same
-                    // if we turned forward, increment it
-                    if (isFwd) {
-                        this.currentPage = nextPage;
-                    }
-                }
-                this.isTurning = false;
-                this.currentPageRotation = 0;
-                this.initialPageRotation = '';
-                Backbone.Mediator.pub('notebook:pageturnend');
-                Backbone.Mediator.pub('noteselected', this.currentPage);
-            },
-
-            turnPage                    : function(isFwd) {
-                var that = this;
-                this.initiatePageTurn(isFwd);
-                this.rotatePage(isFwd ? -180 : (180 + this.currentPageRotation), function() {
-                    that.concludePageTurn(isFwd);
-                });
-            },
-
-            rotatePage                  : function(degrees, callback) {
-                var that = this;
-                if (degrees === 0) {
-                    if (callback) {
-                        callback.call();
-                    }
-                } else {
-                    this.currentPageRotation = this.currentPageRotation + degrees;
-                    if (callback) {
-                        this.currentPage.$el.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function() {
-                            that.currentPage.$el.unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd");
-                            callback.call();
-                        });
-                    }
-                    this.currentPage.css('-webkit-transform', 'rotateY('+this.currentPageRotation+'deg)');
-                }
             }
-
 
         });
 
