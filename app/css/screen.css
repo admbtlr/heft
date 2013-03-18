@@ -399,93 +399,49 @@ td {
   font-weight: normal;
   font-style: normal; }
 
-/* line 45, ../sass/screen.scss */
+/* line 54, ../sass/screen.scss */
 * {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
-/* line 47, ../sass/screen.scss */
+/* line 56, ../sass/screen.scss */
 * {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
-/* line 58, ../sass/screen.scss */
-.page-buttons a, .edit-buttons a {
-  display: inline-block;
-  text-decoration: none; }
-
-/* line 62, ../sass/screen.scss */
-.page-buttons, .edit-buttons {
-  -webkit-transition: 0.2s;
-  width: 480px;
-  height: 60px;
-  position: absolute;
-  bottom: -60px;
-  color: #333;
-  padding: 0 15px 10px 0;
-  display: none;
-  font-size: 50px;
-  line-height: 1.3;
-  -webkit-transition: 0.2s;
-  -moz-transition: 0.2s;
-  -o-transition: 0.2s;
-  transition: 0.2s;
-  -webkit-transform: translateZ(0px);
-  -moz-transform: translateZ(0px);
-  -ms-transform: translateZ(0px);
-  -o-transform: translateZ(0px);
-  transform: translateZ(0px); }
-
-/* line 86, ../sass/screen.scss */
-.edit-buttons {
-  display: block;
-  background-color: #f0f0f0; }
-  /* line 89, ../sass/screen.scss */
-  .edit-buttons a {
-    color: #333; }
-  /* line 92, ../sass/screen.scss */
-  .edit-buttons a:hover {
-    color: #141414; }
-
-/* line 96, ../sass/screen.scss */
-.page-buttons a, .edit-buttons a {
-  display: inline-block;
-  width: 25%;
-  text-align: center; }
-
-/* line 102, ../sass/screen.scss */
+/* line 116, ../sass/screen.scss */
 html {
   font-size: 62.5%; }
 
-/* line 106, ../sass/screen.scss */
+/* line 120, ../sass/screen.scss */
 html, body {
   height: 100%; }
 
-/* line 110, ../sass/screen.scss */
+/* line 124, ../sass/screen.scss */
 .main {
   width: 100%;
   height: 100%;
   min-height: 100%;
   -webkit-overflow-scrolling: touch; }
 
-/* line 119, ../sass/screen.scss */
+/* line 133, ../sass/screen.scss */
 .cf {
   display: table;
   clear: both; }
 
-/* line 124, ../sass/screen.scss */
+/* line 138, ../sass/screen.scss */
 .note-edit {
   position: absolute;
   top: 0;
   width: 100%;
   height: 100%; }
 
-/* line 131, ../sass/screen.scss */
+/* line 145, ../sass/screen.scss */
 #note-edit-form {
   width: 100%;
   height: 100%; }
 
-/* line 135, ../sass/screen.scss */
+/* line 149, ../sass/screen.scss */
 #note-edit-form textarea {
   -webkit-user-select: text;
   -moz-user-select: -moz-text;
@@ -499,19 +455,19 @@ html, body {
   border: 0px;
   font: 18px/26px "SourceCodePro"; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71), screen and (device-aspect-ratio: 3 / 4) {
-    /* line 135, ../sass/screen.scss */
+    /* line 149, ../sass/screen.scss */
     #note-edit-form textarea {
       font: 26px/36px "SourceCodePro"; } }
 
-/* line 151, ../sass/screen.scss */
+/* line 165, ../sass/screen.scss */
 #note-edit-form textarea:focus {
   outline: 0; }
 
-/* line 155, ../sass/screen.scss */
+/* line 169, ../sass/screen.scss */
 .note {
   box-sizing: border-box;
-  width: 480px;
-  height: 690px;
+  width: 320px;
+  height: 460px;
   margin: 0 auto;
   overflow-x: none;
   overflow-y: scroll;
@@ -520,33 +476,43 @@ html, body {
   -ms-backface-visibility: hidden;
   -o-backface-visibility: hidden;
   backface-visibility: hidden; }
-  /* line 164, ../sass/screen.scss */
+  @media screen and (device-aspect-ratio: 2 / 3) {
+    /* line 169, ../sass/screen.scss */
+    .note {
+      width: 320px;
+      height: 460px; } }
+  @media screen and (device-aspect-ratio: 40 / 71) {
+    /* line 169, ../sass/screen.scss */
+    .note {
+      width: 320px;
+      height: 548px; } }
+  /* line 188, ../sass/screen.scss */
   .note p {
     -webkit-hyphens: auto; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71), screen and (device-aspect-ratio: 3 / 4) {
-    /* line 155, ../sass/screen.scss */
+    /* line 169, ../sass/screen.scss */
     .note {
       -webkit-overflow-scrolling: touch;
       -webkit-transform: translateZ(0px); } }
 
-/* line 175, ../sass/screen.scss */
+/* line 199, ../sass/screen.scss */
 .note p {
   padding: 0;
   margin: 0; }
 
-/* line 180, ../sass/screen.scss */
+/* line 204, ../sass/screen.scss */
 .note h1:first-of-type {
   margin-top: 0px; }
 
-/* line 184, ../sass/screen.scss */
+/* line 208, ../sass/screen.scss */
 .first-line-bold p:first-child:first-line {
   font-weight: bold; }
 
-/* line 188, ../sass/screen.scss */
+/* line 212, ../sass/screen.scss */
 .first-line-larger p:first-child:first-line {
   font-size: 180%; }
 
-/* line 195, ../sass/screen.scss */
+/* line 219, ../sass/screen.scss */
 #book-holder {
   -webkit-perspective: 2000;
   -moz-perspective: 2000;
@@ -554,18 +520,32 @@ html, body {
   -o-perspective: 2000;
   perspective: 2000; }
 
-/* line 199, ../sass/screen.scss */
+/* line 223, ../sass/screen.scss */
 .book {
   position: relative;
-  width: 960px;
-  height: 690px;
+  width: 640px;
+  height: 460px;
   overflow: hidden; }
-  @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71), screen and (device-aspect-ratio: 3 / 4) {
-    /* line 199, ../sass/screen.scss */
+  @media screen and (device-aspect-ratio: 2 / 3) {
+    /* line 223, ../sass/screen.scss */
     .book {
-      left: -480px; } }
+      width: 640px;
+      height: 460px; } }
+  @media screen and (device-aspect-ratio: 40 / 71) {
+    /* line 223, ../sass/screen.scss */
+    .book {
+      width: 640px;
+      height: 548px; } }
+  @media screen and (device-aspect-ratio: 2 / 3) {
+    /* line 223, ../sass/screen.scss */
+    .book {
+      left: -320px; } }
+  @media screen and (device-aspect-ratio: 40 / 71) {
+    /* line 223, ../sass/screen.scss */
+    .book {
+      left: -320px; } }
 
-/* line 209, ../sass/screen.scss */
+/* line 244, ../sass/screen.scss */
 .page {
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
@@ -586,21 +566,31 @@ html, body {
   -ms-user-select: none;
   user-select: none; }
 
-/* line 220, ../sass/screen.scss */
+/* line 255, ../sass/screen.scss */
 .side {
   box-sizing: border-box;
   position: absolute;
   top: 0px;
-  left: 480px;
-  width: 480px;
-  height: 690px;
+  left: 320px;
+  width: 320px;
+  height: 460px;
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   -ms-backface-visibility: hidden;
   -o-backface-visibility: hidden;
   backface-visibility: hidden; }
+  @media screen and (device-aspect-ratio: 2 / 3) {
+    /* line 255, ../sass/screen.scss */
+    .side {
+      width: 320px;
+      height: 460px; } }
+  @media screen and (device-aspect-ratio: 40 / 71) {
+    /* line 255, ../sass/screen.scss */
+    .side {
+      width: 320px;
+      height: 548px; } }
 
-/* line 231, ../sass/screen.scss */
+/* line 274, ../sass/screen.scss */
 .verso {
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
@@ -609,11 +599,11 @@ html, body {
   transform: rotateY(180deg);
   background-color: #ffe; }
 
-/* line 236, ../sass/screen.scss */
+/* line 279, ../sass/screen.scss */
 .recto {
   background-color: #ffe; }
 
-/* line 240, ../sass/screen.scss */
+/* line 283, ../sass/screen.scss */
 .flipped {
   -webkit-transform: rotateY(-180deg);
   -moz-transform: rotateY(-180deg);
@@ -621,6 +611,6 @@ html, body {
   -o-transform: rotateY(-180deg);
   transform: rotateY(-180deg); }
 
-/* line 244, ../sass/screen.scss */
+/* line 287, ../sass/screen.scss */
 #page-store {
   display: none; }

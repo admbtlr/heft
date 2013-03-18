@@ -32,12 +32,21 @@
 }
 
 @mixin iphone {
-  // @media only screen and (max-width: 480px) {
-  //   @content;
-  // }
     @media screen and (device-aspect-ratio: 2/3), 
             screen and (device-aspect-ratio: 40/71), 
             screen and (device-aspect-ratio: 3/4) { 
+        @content;
+    }
+}
+
+@mixin iphone4 {
+    @media screen and (device-aspect-ratio: 2/3) { 
+        @content;
+    }
+}
+
+@mixin iphone5 {
+    @media screen and (device-aspect-ratio: 40/71) { 
         @content;
     }
 }
@@ -47,57 +56,62 @@
 * { -webkit-tap-highlight-color: rgba(0,0,0,0); }
 
 $padding: 50px;
-$pageWidth: 480px;
-$pageHeight: 690px;
+$pageWidth: 320px;
+$pageHeight: 460px;
+$ip4PageWidth: 320px;
+$ip4PageHeight: 460px;
+$ip5PageWidth: 320px;
+$ip5PageHeight: 548px;
+
 
 // colours
 $editorBg: rgb(240, 240, 240);
 $editorFg: rgb(20,20,20);
 
 // the buttons
-.page-buttons a, .edit-buttons a {
-    display: inline-block;
-    text-decoration: none;
-}
-.page-buttons, .edit-buttons {
-    // border-top: 1px solid #333;
-    // opacity: 0.95;
-    -webkit-transition: 0.2s;
-    width: $pageWidth;
-    height: 60px;
-    position: absolute;
-    bottom: -60px;
-    // left: $pageWidth;
-    // @include iphone {
-    //     left: 0;
-    // }
-    // margin-top: 0px;
-    color: #333;
-    padding: 0 15px 10px 0;
-    display: none;
-    font-size: 50px;
-    line-height: 1.3;
-    @include transition(0.2s);
-    @include transform(translateZ(0px));
-}
-.page-buttons {
-    // @include backface-visibility(hidden);
-}
-.edit-buttons {
-    display: block;
-    background-color: $editorBg;
-    a {
-        color: #333;
-    }
-    a:hover {
-        color: $editorFg;
-    }
-}
-.page-buttons a, .edit-buttons a {
-    display: inline-block;
-    width: 25%;
-    text-align: center;
-}
+// .page-buttons a, .edit-buttons a {
+//     display: inline-block;
+//     text-decoration: none;
+// }
+// .page-buttons, .edit-buttons {
+//     // border-top: 1px solid #333;
+//     // opacity: 0.95;
+//     -webkit-transition: 0.2s;
+//     width: $pageWidth;
+//     height: 60px;
+//     position: absolute;
+//     bottom: -60px;
+//     // left: $pageWidth;
+//     // @include iphone {
+//     //     left: 0;
+//     // }
+//     // margin-top: 0px;
+//     color: #333;
+//     padding: 0 15px 10px 0;
+//     display: none;
+//     font-size: 50px;
+//     line-height: 1.3;
+//     @include transition(0.2s);
+//     @include transform(translateZ(0px));
+// }
+// .page-buttons {
+//     // @include backface-visibility(hidden);
+// }
+// .edit-buttons {
+//     display: block;
+//     background-color: $editorBg;
+//     a {
+//         color: #333;
+//     }
+//     a:hover {
+//         color: $editorFg;
+//     }
+// }
+// .page-buttons a, .edit-buttons a {
+//     display: inline-block;
+//     width: 25%;
+//     text-align: center;
+// }
 
 html {
   font-size: 62.5%;
@@ -156,8 +170,18 @@ html, body {
     box-sizing: border-box;
     // margin-top: -40%;
     // margin-left: -20%;
+
     width: $pageWidth;
     height: $pageHeight;
+    @include iphone4 {
+        width: $ip4PageWidth;
+        height: $ip4PageHeight;
+    }
+    @include iphone5 {
+        width: $ip5PageWidth;
+        height: $ip5PageHeight;
+    }
+
     margin: 0 auto;
     overflow-x: none;
     overflow-y: scroll;
@@ -200,9 +224,20 @@ html, body {
     position: relative;
     width: $pageWidth*2;
     height: $pageHeight;
+    @include iphone4 {
+        width: $ip4PageWidth*2;
+        height: $ip4PageHeight;
+    }
+    @include iphone5 {
+        width: $ip5PageWidth*2;
+        height: $ip5PageHeight;
+    }
     overflow: hidden; // for the button bars
-    @include iphone {
-        left: -480px;
+    @include iphone4 {
+        left: -$ip4PageWidth;
+    }
+    @include iphone5 {
+        left: -$ip5PageWidth;
     }
 }
 
@@ -223,6 +258,14 @@ html, body {
     top: 0px;
     left: $pageWidth;
     width: $pageWidth;
+    @include iphone4 {
+        width: $ip4PageWidth;
+        height: $ip4PageHeight;
+    }
+    @include iphone5 {
+        width: $ip5PageWidth;
+        height: $ip5PageHeight;
+    }
     height: $pageHeight;
     // @include transition(background-color 0.5s linear);
     @include backface-visibility(hidden);

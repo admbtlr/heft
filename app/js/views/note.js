@@ -78,7 +78,8 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     style = this.model.get('style'),
                     styleMap = {},
                     classesToAdd = [],
-                    classesToRemove = [];
+                    classesToRemove = [],
+                    deviceMultiplier = 0.666;
 
                 // no style? deal with it!
                 if (!style) {
@@ -100,6 +101,14 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
 
                 var context = this;
                 _.each(_.keys(style), function(key) {
+                    var value = style[key];
+
+                    // apply the device multiplier
+                    console.log(key+'::'+value);
+                    if (_.isString(value) && value.indexOf('px') != -1) {
+                        value = context.applyMultiplier(value, deviceMultiplier);
+                    }
+
                     if (key.substring(0, 1) === '$') {
                         if (style[key]) {
                             classesToAdd.push(context.styleHyphenFormat(key.substring(1)));
@@ -115,9 +124,9 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                         // build selector
                         _.each(selectors, function(s) { selector += s+' '; });
                         // $page.find(selector).css(context.styleHyphenFormat(pieces[1]), (_.isArray(style[key]) ? context.arrayToRGB(style[key]) : style[key]));
-                        $page.find(selector).css(context.styleHyphenFormat(pieces[1]), style[key]);
+                        $page.find(selector).css(context.styleHyphenFormat(pieces[1]), value);
                     } else {
-                        styleMap[key] = style[key];
+                        styleMap[key] = value;
                         // $page.css(context.styleHyphenFormat(key), style[key]);
                     }
                 });
@@ -131,6 +140,18 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     this.fitToPage();
                 }
 
+            },
+
+            applyMultiplier     : function(declaration, multiplier) {
+                var pieces = declaration.split(' '),
+                    multiplied = '';
+                _.each(pieces, function(p) {
+                    if (p.indexOf('px') != -1) {
+                        p = (Number(p.slice(0, -2)) * multiplier) + 'px';
+                    }
+                    multiplied = multiplied+p+' ';
+                });
+                return multiplied.slice(0, -1);
             },
 
             addOrRemoveSpans    : function($page, styleMap) {
