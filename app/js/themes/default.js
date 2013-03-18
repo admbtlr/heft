@@ -11,17 +11,16 @@ define([],
                 backgroundImages = ['light_noise_diagonal','cubes','old_mathematics','old_mathematics_invert','graphy','squares','gridme','paper'],
                 theme = {
                     fontSize            : (20 + (Math.round(Math.random() * 500) / 10)) + 'px',
-                    h1__fontStyle        : Math.random() > 0.7 ? 'italic' : 'normal',
-                    h1__textTransform    : Math.random() > 0.9 ? 'uppercase' : (Math.random() > 0.9 ? 'lowercase' : 'none'),
-                    h1__fontWeight       : Math.random() < 0.5 ? 'normal' : 'bold',
-                    h1__fontSize         : (Math.round(Math.random() * 30 + 20) / 10) + 'em',
+                    h1__textTransform    : Math.random() > 0.7 ? 'uppercase' : 'none',
+                    h1__fontWeight       : 'normal',
+                    h1__fontSize         : (Math.round(Math.random() * 20 + 20) / 10) + 'em',
                     h1__WebkitHyphens    : Math.random() > 0.5 ? 'auto' : 'none',
                     padding             : (10 + Math.round(Math.random() * 50)) + 'px',
                     marginTop           : 0,
                     h1__lineHeight      : 0.8 + (Math.round(Math.random() * 4) / 10),
-                    lineHeight          : Math.round(100 + (Math.random() * 60)) / 100,
+                    lineHeight          : Math.round(120 + (Math.random() * 40)) / 100,
                     align               : Math.round(Math.random() * 8),
-                    boxShadow           : Math.random > 0.5 ? '' : 'inset 0 0 100px rgba(0,0,0,0.3)',
+                    boxShadow           : Math.random() < 0.8 ? '' : 'inset 0 0 100px rgba(0,0,0,0.3)',
 
                     // border width up to 5, > 5 = no border
                     border              : Math.random() > 0.8 ? Math.round(Math.random() * 20) + 'px solid' + (Math.random() > 0.5 ? ' white' : '') : ''
@@ -42,8 +41,8 @@ define([],
         };
 
         defaultTheme.makeFonts = function() {
-            var hFontsSans = ['BebasNeueRegular', 'BlackoutMidnight', 'LeagueGothicRegular'],
-                hFontsSerif = ['ChunkFiveRegular', 'MuseoSlab'],
+            var hFontsSans = ['BebasNeueRegular', 'BlackoutMidnight', 'LeagueGothicRegular', 'CabinBold', 'CabinBoldItalic'],
+                hFontsSerif = ['ChunkFiveRegular', 'MuseoSlab', 'PTSerifBold'],
                 pFontsSans = ['CabinRegular', 'JunctionRegular'],
                 pFontsSerif = ['MuseoSlab', 'PTSerifRegular'],
                 headingSerif = Math.random() > 0.6,
@@ -69,17 +68,27 @@ define([],
                 isBgDark    = Math.random() < 0.3,
                 isBgLight   = !isBgDark,
                 isBgExtreme = Math.random() < 0.5,
-                isWhiteShadow = Math.random() < 0.3,
-                isOutline   = !isWhiteShadow && Math.random() < 0.3,
-                isInlaid    = !isWhiteShadow && !isOutline && Math.random() < 0.3,
+                isWhiteShadow = Math.random() < 0.2,
+                isOutline   = !isWhiteShadow && Math.random() < 0.2,
+                isInlaid    = !isWhiteShadow && !isOutline && Math.random() < 0.2,
                 isComplementary = Math.random() < 0.3,
+                isHSameAsFG = Math.random() < 0.3,
                 hue         = Math.round(Math.random() * 360),
                 saturation  = 30,
                 lightness   = isBgDark ? 30 : 70,
-                bgData      = [hue, saturation],
-                fgData      = [hue, saturation],
-                hData       = [hue, saturation],
+                bgData,
+                fgData,
+                hData,
                 fgColor;
+
+            // try to avoid purple
+            if (hue > 250 && hue < 350) {
+                hue         = Math.round(Math.random() * 360);
+            }
+
+            bgData      = [hue, saturation];
+            fgData      = [hue, saturation];
+            hData       = [hue, saturation];
 
             if (isBgExtreme) {
                 bgData.push(isBgDark ? 5 : 95);
@@ -90,14 +99,18 @@ define([],
             if (Math.random() < 0.5) {
                 fgData.push(50);
             } else {
-                fgData.push(isBgDark ? 95 : 5);
+                fgData.push(isBgDark ? 90 : 10);
             }
 
-            if (isComplementary) {
+            if (isHSameAsFG) {
+                hData = fgData;
+            } else if (isComplementary) {
                 hData[0] = hData[0]+180;
+                hData[2] = fgData[2];
+            } else  {
+                hData.push(isBgDark ? 70 : 30);
+                hData[1] = 60;
             }
-            hData.push(isBgDark ? 70 : 30);
-            hData[1] = 60;
 
             if (isWhiteShadow) {
                 colors.h1__textShadow = 'white 3px 3px 0';
@@ -107,7 +120,7 @@ define([],
                     colors.h1__textShadow += ', white 3px 0 0, white -3px 0 0, white 0 3px 0, white 0 -3px 0';
                 }
             } else if (isInlaid) {
-                colors.h1__textShadow = 'white 1px 0 0';
+                colors.h1__textShadow = 'white 0 1px 0';
             }
 
             colors.backgroundColor = this.arrayToHSL(bgData);

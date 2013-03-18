@@ -10,6 +10,7 @@ define(['models/note', 'localstorage'],
 
             initialize  : function() {
                 this.fetch();
+                this.bind('change', this.save);
             }
 
             // setStore    : function(store) {

@@ -9,6 +9,7 @@ define(['models/note'],
                 if (notes.length === 0) {
                     notes.add(new Note({ content: '' }));
                 }
+                // this.currentNote = notes.at(notes.length-1);
                 this.currentNote = notes.at(0);
             },
 

@@ -197,7 +197,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
 
                 this.currentPage.sideCss('box-shadow', '10px 0 5px rgba(0, 0, 0, 0.3)', 'recto');
                 this.currentPage.sideCss('box-shadow', '-10px 0 5px rgba(0, 0, 0, 0.3)', 'verso');
-                
+
                 if (isFwd) {
                     this.currentPageRotation = this.initialPageRotation = 0;
                 } else if (!this.isDoubleSpread) {
@@ -219,21 +219,22 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
             concludePageTurn            : function(isFwd) {
                 var pages = this.getAdjacentPages(isFwd),
                     nextPage = pages[0],
-                    prevPage = pages[1];
+                    prevPage = pages[1],
+                    oldCurrentPage;
                 this.currentPage.css('-webkit-transition', '-webkit-transform 0.5s ease-in-out'); // TODO
                 this.currentPage.sideCss('box-shadow', '');
                 if (this.initialPageRotation === this.currentPageRotation) {
                     // put the next page back into the page store
-                    if (nextPage.length) {
+                    if (nextPage && nextPage.length) {
                         nextPage.$el.remove().appendTo('#page-store');
                     }
                 } else {
+
+                    oldCurrentPage = isFwd ? this.currentPage : prevPage;
+
                     // once we've turned the page, the note is no longer stylable
-                    if (!isFwd) {
-                        prevPage.getNote().model.set('stylable', false);
-                    } else {
-                        this.currentPage.getNote().model.set('stylable', false);
-                    }
+                    oldCurrentPage.getNote().model.set('stylable', false);
+                    oldCurrentPage.getNote().model.save();
 
                     // move nextPage to front, previous previous page to page-store
                     if (prevPage) {
@@ -243,13 +244,17 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                         if (isFwd) {
                             this.currentPage.$el.remove().insertBefore(nextPage.$el);
                         } else {
-                            this.currentPage.$el.remove().insertAfter(nextPage.$el);
+                            nextPage.$el.remove().insertAfter(this.currentPage.$el);
                         }
                     }
                     // if we just turned back, the currentPage stays the same
                     // if we turned forward, increment it
                     if (isFwd) {
                         this.currentPage = nextPage;
+                    }
+
+                    if (this.currentPage.$el.find('textarea').length > 0) {
+                        this.currentPage.$el.find('textarea').focus();
                     }
                 }
                 this.isTurning = false;
@@ -260,6 +265,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     this.pagePendingDestruction = null;
                 }
                 Backbone.Mediator.pub('notebook:pageturnend');
+                Backbone.Mediator.pub('notedeselected', oldCurrentPage);
                 Backbone.Mediator.pub('noteselected', this.currentPage);
             },
 
@@ -411,7 +417,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
 
             handleClickEvent    : function(e) {
                 if (!this.isTurning) {
-                    if (this.mouseX < 0.2) {
+                    if (this.mouseX < 0.2 && !this.isFirst()) {
                         this.currentPage = this.getPrevPage();
                         this.turnBack();
                     } else if (this.mouseX > 0.8) {

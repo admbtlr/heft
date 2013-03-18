@@ -164,24 +164,27 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     h1FontSizeNum = Number(this.model.get('style').h1__fontSize.slice(0, -2)),
                     pMarginTopNum = Number(this.model.get('style').p__marginTop.slice(0, -2)),
                     lineHeight = this.model.get('style').lineHeight,
+                    h1LineHeight = this.model.get('style').h1__lineHeight,
                     paddingNum = Number(this.model.get('style').padding.slice(0, -2)),
                     height = this.outerHeight($page),
                     width = this.outerWidth($page);
                 console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum);
-                while ((height > $page.height() || width > $page.width()) && fontSizeNum > 24) {
-                    console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum);
+                while ((height > $page.height() || width > $page.width()) && fontSizeNum > 28) {
+                    console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum+'::'+h1FontSizeNum);
                     height = 0;
                     fontSizeNum = Math.round(fontSizeNum * 0.9);
-                    h1FontSizeNum = Math.round(h1FontSizeNum * 0.9);
+                    h1FontSizeNum = h1FontSizeNum < 1.4 ? h1FontSizeNum : h1FontSizeNum * 0.9;
+                    h1ineHeight = Math.round(h1LineHeight * 0.9);
                     pMarginTopNum = Math.round(pMarginTopNum * 0.9);
                     paddingNum = Math.round(paddingNum * 0.8);
                     $page.css('font-size', fontSizeNum + 'px');
                     $page.css('padding', paddingNum + 'px');
                     $page.children('h1').css('font-size', h1FontSizeNum+'em');
+                    $page.children('h1').css('line-height', h1LineHeight);
                     height = this.outerHeight($page);
                     width = this.outerWidth($page);
                 }
-                console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum);
+                console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum+'::'+h1FontSizeNum);
                 var remainder = $page.height() - height,
                     paddingTop = remainder > 0 ? [paddingNum, remainder / 2.0, remainder-paddingNum][Math.round(Math.random() * 2)] : Math.round(Math.random() * 30);
                 // $($page.children()[0]).css('margin-top', marginTop);
@@ -189,6 +192,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 this.model.get('style').fontSize = fontSizeNum + 'px';
                 this.model.get('style').padding = paddingTop + 'px ' + paddingNum + 'px ' + paddingNum + 'px';
                 this.model.get('style').h1__fontSize = h1FontSizeNum+'em';
+                this.model.get('style').h1__lineHeight = h1LineHeight;
                 this.model.get('style').p__marginTop = pMarginTopNum+'px';
                 this.model.set('pageFitted', true);
                 this.renderStyle();

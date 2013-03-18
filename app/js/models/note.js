@@ -6,6 +6,10 @@ define(['themes/default'],
 
             defaults    : {},
 
+            // initialize  : function() {
+            //     this.bind('change:stylable', this.save);
+            // },
+
             getModifyDateAsString   : function() {
                 if (!this.get('modifydate')) {
                     return '';

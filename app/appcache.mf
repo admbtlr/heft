@@ -1,13 +1,13 @@
 CACHE MANIFEST
 
-#0.03
+#0.44
 
 CACHE:
 index.html
 css/screen.css
 css/font-awesome.css
 
-#js/lib/require.js
+js/lib/require.js
 
 js/main.js
 js/app.js
@@ -42,6 +42,50 @@ js/views/note.js
 js/views/notebook.js
 js/views/page.js
 js/views/pageButtons.js
+
+font/BebasNeue-webfont.woff
+font/BebasNeue-webfont.ttf
+font/BebasNeue-webfont.svg#BebasNeueRegular
+font/Blackout-Midnight-webfont.woff
+font/Blackout-Midnight-webfont.ttf
+font/Blackout-Midnight-webfont.svg#BlackoutMidnight
+font/Cabin-Regular-webfont.woff
+font/Cabin-Regular-webfont.ttf
+font/Cabin-Regular-webfont.svg#CabinRegular
+font/Cabin-Italic-webfont.woff
+font/Cabin-Italic-webfont.ttf
+font/Cabin-Italic-webfont.svg#CabinRegular
+font/Cabin-Bold-webfont.woff
+font/Cabin-Bold-webfont.ttf
+font/Cabin-Bold-webfont.svg#CabinRegular
+font/Cabin-BoldItalic-webfont.woff
+font/Cabin-BoldItalic-webfont.ttf
+font/Cabin-BoldItalic-webfont.svg#CabinRegular
+font/Chunkfive-webfont.woff
+font/Chunkfive-webfont.ttf
+font/Chunkfive-webfont.svg#ChunkFiveRegular
+font/Junction-webfont.woff
+font/Junction-webfont.ttf
+font/Junction-webfont.svg#JunctionRegular
+font/League_Gothic-webfont.woff
+font/League_Gothic-webfont.ttf
+font/League_Gothic-webfont.svg#LeagueGothicRegular
+font/Museo_Slab_500-webfont.woff
+font/Museo_Slab_500-webfont.ttf
+font/Museo_Slab_500-webfont.svg
+font/PTF55F-webfont.woff
+font/PTF55F-webfont.ttf
+font/PTF55F-webfont.svg#PTSerifRegular
+font/PTF56F-webfont.woff
+font/PTF56F-webfont.ttf
+font/PTF56F-webfont.svg#PTSerifItalic
+font/PTF75F-webfont.woff
+font/PTF75F-webfont.ttf
+font/PTF75F-webfont.svg#PTSerifBold
+font/SourceCodePro-Regular-webfont.woff
+font/SourceCodePro-Regular-webfont.ttf
+font/SourceCodePro-Regular-webfont.svg#SourceCodePro
+
 
 NETWORK:
 *

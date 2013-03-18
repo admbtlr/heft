@@ -112,55 +112,8 @@ html, body {
     width: 100%;
     height: 100%;
     min-height: 100%;
-    background: #666 url('/img/cardboard_med.jpg');
     -webkit-overflow-scrolling: touch;
     // padding: 50px;
-}
-
-.header {
-    width: 100%;
-    height: 150px;
-}
-
-.header > h1 {
-    display: none;
-    text-transform: lowercase;
-    text-shadow: rgba(200,100,100,0.7) 3px -3px 0;
-    line-height: 1;
-    color: rgba(30,30,0,0.7);
-    font-weight: bolder;
-    font-size: 100px;
-    margin: 0;
-    padding: 25px 10px;
-    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
-}
-
-#search-bar {
-    padding: 5px 10px;
-    width: 540px;
-    position: absolute;
-    right: 30px;
-    top: 55px;
-    height: 40px;
-    font-size: 2em;
-    border-radius: 20px;
-    border: 1px;    
-}
-
-#search-bar:focus {
-    border: 1px;        
-}
-
-.tiles {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    right: 600px;
-    overflow-y: auto;
-    // so that we're not scrolling shadows against a fixed bg image...
-    background: #666 url('/img/cardboard_med.jpg');
-
 }
 
 .cf {
@@ -168,37 +121,6 @@ html, body {
   clear: both;
 }
 
-@media only screen and (max-device-width: 480px) { 
-    .active-note, .edit-overlay {
-        padding-top: 0px; 
-    }
-}
-
-body.kill-scrolling {
-    overflow: hidden;
-}
-
-.active-note {
-    position: absolute;
-    width: 600px;
-    top: 110px;
-    bottom: 0;
-    right: 0;
-    overflow: hidden;
-    padding: 30px 20px 20px;
-    .buttons {
-        background-color: rgba(0,0,0,0.3);
-        @include border-radius(0 50px 0 0);
-        width: 500px;
-        height: 50px;
-        margin-top: 50px;
-    }
-    @include iphone {
-        top: 0px;
-        padding: 0;
-        width: 480px;
-    }
-}
 .note-edit {
     // @include transform(rotateY(180deg));
     position: absolute;
@@ -223,118 +145,11 @@ body.kill-scrolling {
     border: 0px;
     font: 18px/26px 'SourceCodePro';
     @include iphone {
-        font: 24px/32px 'SourceCodePro';
+        font: 26px/36px 'SourceCodePro';
     }
 }
 #note-edit-form textarea:focus {
     outline: 0;
-}
-
-// flippy stuff:
-.active-note {
-    @include perspective(1000);
-}
-.flip-holder {
-    @include transform-style(preserve-3d);
-    @include transition(all 0.2s linear);
-    // height: 100%;
-}
-.flip-me {
-    @include transform(rotateY(180deg));    
-}
-.flip-face {
-    @include backface-visibility(hidden);
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0px;
-    width: 100%;
-    height: 100%;
-}
-
-.tile {
-    display: block;
-    margin: 1px 1px 0 0;
-    width: 150px;
-    float: left;
-    position: relative;
-}
-
-.tile-spinner {
-    @include transform(rotateZ(360deg)); 
-}
-
-.tile > h1 {
-    display: none;
-    float: left;
-    height: 30px;
-    text-shadow: rgba(255,255,255,0.3) 0 1px 0;
-    font-size: 1.25em;
-    padding: 2px;
-    color: rgb(30,30,0);
-    margin: 0;
-}
-
-.tile .modify-date {
-    border-radius: 5px 0 5px 0;
-    font-weight: normal;
-    right: 0px;
-    background-color: rgba(100,100,100, 0.9);
-    bottom: 0px;
-    position: absolute;
-    font-size: 1.25em;
-    padding: 2px;
-    color: rgb(200,200,200);
-    margin: 0;
-}
-
-.tiles .selected-note {
-    // margin: 10px 5px 0;
-    // box-sizing: content-box;
-    // border: 10px solid rgb(200,100,100);
-    // @include box-shadow(rgb(200,100,100) 0 0 5px);
-    // @include border-radius(5px);
-    @include transition(0.4s ease-out);
-    position: relative;
-    z-index: 5;
-}
-
-.porthole {
-    padding: 0;
-    padding: 0;
-    // border: 1px solid #999;
-    width: 150px;
-    height: 150px;
-    float: left;
-    overflow: hidden;
-    // background-color: #ccd;
-    text-decoration: none;
-    color: inherit;
-    // @include box-shadow(rgba(0,0,0,0.2) 0 0 5px 0);
-    @include border-radius(5px);
-
-}
-
-/* higher specificity, to override .porthole styles for the selected note */
-.active-note-display {
-    @include box-shadow(rgba(0,0,0, 0.2) 0 0 10px 0);
-    @include border-radius(10px);
-    border: 1px solid #999;
-}
-
-.active-note-display .note {
-    @include transform(scale(1));
-    overflow-y: scroll;
-    @include border-radius(10px);
-    width: 100%;
-    height: 100%;
-}
-
-.porthole .note {
-    -webkit-transform: scale(0.5);
-    -webkit-transform-origin: -10% -10%;
-    -webkit-transition: -webkit-transform .5s;
-    overflow: hidden;
 }
 
 .note {

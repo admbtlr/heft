@@ -50,7 +50,17 @@
     font-family: 'CabinBold';
     src: url('/font/Cabin-Bold-webfont.woff') format('woff'),
          url('/font/Cabin-Bold-webfont.ttf') format('truetype'),
-         url('/font/Cabin-Bold-webfont.svg#CabinBold') format('svg');
+         url('/font/Cabin-Bold-webfont.svg#CabinItalic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'CabinBoldItalic';
+    src: url('/font/Cabin-BoldItalic-webfont.woff') format('woff'),
+         url('/font/Cabin-BoldItalic-webfont.ttf') format('truetype'),
+         url('/font/Cabin-BoldItalic-webfont.svg#CabinItalic') format('svg');
     font-weight: normal;
     font-style: normal;
 
