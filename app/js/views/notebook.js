@@ -67,10 +67,28 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
             },
 
             render      : function() {
+                var pages,
+                    nextPage,
+                    prevPage;
+
                 this.$el.html(this.template());
+
                 this.currentPage = this.createPage(this.model.currentNote);
                 this.$currentPage = this.currentPage.$el;
                 this.currentPage.$el.appendTo(this.$el.children('.book'));
+
+                pages = this.getAdjacentPages();
+                nextPage = pages[0];
+                prevPage = pages[1];
+
+                // make sure next page is visible and immediately below current page
+                if (nextPage) {
+                    nextPage.$el.remove().insertBefore(this.currentPage.$el).show();
+                }
+                if (prevPage) {
+                    prevPage.$el.remove().insertBefore(this.currentPage.$el).show();
+                }
+
                 return this;
             },
 
@@ -93,10 +111,12 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 });
                 if (this.pagePendingDestruction == this.currentPage) {
                     if (this.isFirst()) {
-                        this.turnForward();
+                        // this.turnForward();
+                        this.swipePage(true);
                     } else {
                         this.currentPage = this.getPrevPage();
-                        this.turnBack();
+                        // this.turnBack();
+                        this.swipePage(false);
                     }
                 }
             },
@@ -186,6 +206,130 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 this.turnPage(false);
             },
 
+            turnPage                    : function(isFwd) {
+                var that = this;
+                this.initiatePageTurn(isFwd);
+                this.initiatePageSwipe(isFwd);
+                this.rotatePage(isFwd ? -180 : (180 + this.currentPageRotation), function() {
+                    that.concludePageTurn(isFwd);
+                });
+            },
+
+            initiatePageSwipe   : function(isFwd) {
+                this.turningFwd = isFwd;
+                // var pages = this.getAdjacentPages(isFwd),
+                //     nextPage = pages[0],
+                //     prevPage = pages[1];
+                // // make sure next page is visible and immediately below current page
+                // if (nextPage) {
+                //     nextPage.$el.remove().insertBefore(this.currentPage.$el).show();
+                // }
+                // if (prevPage) {
+                //     prevPage.$el.remove().insertBefore(this.currentPage.$el).show();
+                // }
+
+                Backbone.Mediator.pub('notebook:pageturnstart');
+                // this.currentPage.sideCss('box-shadow', '10px 0 5px rgba(0, 0, 0, 0.3)', 'recto');
+                // this.currentPage.sideCss('box-shadow', '-10px 0 5px rgba(0, 0, 0, 0.3)', 'verso');
+            },
+
+            swipePageIncremental    : function(isFwd, diff) {
+                var transition = this.currentPage.$el.css('-webkit-transition');
+                this.currentPage.$el.css('-webkit-transition', '');
+                this.incrementalDiff = this.incrementalDiff ? this.incrementalDiff + diff : diff;
+                if (isFwd) {
+                    // if (percentage >= 50) {
+                    //     this.currentPage.css('-webkit-transform', 'translateX(0)');
+                    //     this.concludePageSwipe(isFwd);
+                    // } else {
+                    //     this.currentPage.css('-webkit-transform', 'translateX(-percentage)');
+                    // }
+                    this.currentPage.$el.css('-webkit-transform', 'translateX('+Math.round(this.incrementalDiff * 50)+'%)');
+                } else {
+                    this.currentPage.$el.css('-webkit-transform', 'translateX('+Math.round(this.incrementalDiff * 50)+'%)');
+                }
+                this.currentPage.$el.css('-webkit-transition', transition);
+            },
+
+            swipePage   : function(isFwd) {
+                var context = this;
+
+                this.initiatePageSwipe(isFwd);
+
+                this.currentPage.$el.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function() {
+                    context.currentPage.$el.unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd");
+                    context.concludePageSwipe(isFwd);
+                });
+                this.currentPage.$el.toggleClass('offscreen');
+            },
+
+            concludeIncrementalPageSwipe    : function() {
+                var transition = this.currentPage.$el.css('-webkit-transition'),
+                    remaining;
+
+                // are we moving forwards or backwards?
+                if (this.incrementalDiff < 0) {
+                    this.currentPage.$el.css('-webkit-transform', 'translateX(-50%)');
+                } else {
+                    this.currentPage.$el.css('-webkit-transform', 'translateX(0%)');
+                }
+
+                this.incrementalDiff = 0;
+                this.currentPage.$el.toggleClass('offscreen');
+                this.currentPage.$el.css('-webkit-transform', ' ');
+                this.concludePageSwipe(this.turningFwd);
+            },
+
+            concludePageSwipe   : function(isFwd) {
+                var pages = this.getAdjacentPages(isFwd),
+                    nextPage = pages[0],
+                    prevPage = pages[1],
+                    oldCurrentPage,
+                    oldNextPage;
+                // this.currentPage.css('-webkit-transition', '-webkit-transform 0.5s ease-in-out'); // TODO
+                // this.currentPage.sideCss('box-shadow', '');
+                // this.currentPage.sideCss('box-shadow', '');
+
+                if (false) {
+                    // we've put the current page back on top, do nothing
+                } else {
+                    oldCurrentPage = isFwd ? this.currentPage : prevPage;
+
+                    // once we've turned the page, the note is no longer stylable
+                    oldCurrentPage.getNote().model.set('stylable', false);
+                    oldCurrentPage.getNote().model.save();
+
+                    if (isFwd) {
+                        if (prevPage) {
+                            prevPage.$el.remove().appendTo('#page-store');
+                        }
+                        this.currentPage = nextPage;
+                        nextPage = this.getNextPage();
+                        nextPage.$el.remove().insertBefore(this.currentPage.$el);
+                    } else {
+                        if (nextPage) {
+                            nextPage.$el.remove().addClass('offscreen').insertAfter(this.currentPage.$el).show();
+                        }
+                        oldNextPage = this.getNextPage(oldCurrentPage);
+                        oldNextPage.$el.remove().appendTo('#page-store');
+                    }
+
+                    if (this.currentPage.$el.find('textarea').length > 0) {
+                        this.currentPage.$el.find('textarea').focus();
+                    }
+                }
+                this.isTurning = false;
+                this.currentPageRotation = 0;
+                this.initialPageRotation = '';
+                if (this.pagePendingDestruction) {
+                    this.pagePendingDestruction.$el.remove();
+                    this.pagePendingDestruction = null;
+                }
+                Backbone.Mediator.pub('notebook:pageturnend');
+                Backbone.Mediator.pub('notedeselected', oldCurrentPage);
+                Backbone.Mediator.pub('noteselected', this.currentPage);
+            },
+
             initiatePageTurn            : function(isFwd) {
                 var pages = this.getAdjacentPages(isFwd),
                     nextPage = pages[0],
@@ -193,7 +337,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
 
                 Backbone.Mediator.pub('notebook:pageturnstart');
 
-                this.isTurning = true;
+                thi = true;
 
                 this.currentPage.sideCss('box-shadow', '10px 0 5px rgba(0, 0, 0, 0.3)', 'recto');
                 this.currentPage.sideCss('box-shadow', '-10px 0 5px rgba(0, 0, 0, 0.3)', 'verso');
@@ -267,14 +411,6 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 Backbone.Mediator.pub('notebook:pageturnend');
                 Backbone.Mediator.pub('notedeselected', oldCurrentPage);
                 Backbone.Mediator.pub('noteselected', this.currentPage);
-            },
-
-            turnPage                    : function(isFwd) {
-                var that = this;
-                this.initiatePageTurn(isFwd);
-                this.rotatePage(isFwd ? -180 : (180 + this.currentPageRotation), function() {
-                    that.concludePageTurn(isFwd);
-                });
             },
 
             rotatePage                  : function(degrees, callback) {
@@ -373,10 +509,9 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 if (!a.isTouch) {
                     this.isMouseDown = false;
                 }
-                if (this.isDragging && this.isTurning) {
-                    this.endSwipeEvent();
+                if (this.isDragging) {
+                    this.endSwipeEvent(a.xCoord);
                 } else {
-                    this.isDragging = false; // is this line necessary?
                     if (distance < minDistance) {
                         this.handleClickEvent();
                         Backbone.Mediator.pub('notebook:mouseup');
@@ -419,21 +554,14 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 if (!this.isTurning) {
                     if (this.mouseX < 0.2 && !this.isFirst()) {
                         this.currentPage = this.getPrevPage();
-                        this.turnBack();
+                        // this.turnBack();
+                        this.swipePage(false);
                     } else if (this.mouseX > 0.8) {
-                        this.turnForward();
+                        // this.turnForward();
+                        this.swipePage(true);
                     } else {
                         Backbone.Mediator.pub('notebook:mouseclick');
                     }
-                    // if ((this.mouseX < this.pageWidth / 2) && !this.isFirst(this.$currentPage)) {
-                    //     // this is weird, but...
-                    //     // when paging back from the end of the book, the order of divs gets reversed
-                    //     // so just check that...
-                    //     this.$currentPage = this.$currentPage.prev().length === 0 ? this.$currentPage.next() : this.$currentPage.prev();
-                    //     this.turnBack();
-                    // } else if (!this.isLast(this.$currentPage)) {
-                        // this.turnForward();
-                    // }
                 }
             },
 
@@ -453,31 +581,32 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
             //     this.mouseX = xCoord;
             // },
 
-            initiateForwardSwipeEvent   : function(xCoord) {
-                if (!this.isLast()) {
-                    this.isDragging = true;
-                    this.currentPageRotation = this.initialPageRotation = 0;
-                    this.mouseX = xCoord;
-                }
-            },
+            // initiateForwardSwipeEvent   : function(xCoord) {
+            //     if (!this.isLast()) {
+            //         this.isDragging = true;
+            //         this.incrementalDiff = 0;
+            //         this.currentPageRotation = this.initialPageRotation = 0;
+            //         this.mouseX = xCoord;
+            //     }
+            // },
 
-            initiateBackwardSwipeEvent  : function(xCoord) {
-                if (!this.isFirst()) {
-                    this.currentPage = this.getPrevPage();
-                    this.isDragging = true;
-                    this.currentPageRotation = this.initialPageRotation = -180;
-                    this.mouseX = xCoord;
-                }
-            },
+            // initiateBackwardSwipeEvent  : function(xCoord) {
+            //     if (!this.isFirst()) {
+            //         this.currentPage = this.getPrevPage();
+            //         this.incrementalDiff = 0;
+            //         this.isDragging = true;
+            //         this.currentPageRotation = this.initialPageRotation = -180;
+            //         this.mouseX = xCoord;
+            //     }
+            // },
 
             continueSwipeEvent          : function(xCoord) {
-                var that = this,
+                var isFwd;
+
+                // initiate the drag
+                // which page is being dragged, the current, or the last one?
+                if (!this.isDragging) {
                     isFwd = xCoord < this.mouseX;
-                // if (!this.isDragging) {
-                //     return;
-                // }
-                this.isDragging = true;
-                if (!this.isTurning) {
                     if (!isFwd) {
                         if (this.isFirst()) {
                             return;
@@ -488,33 +617,38 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                             return;
                         }
                     }
-                    this.initiatePageTurn(isFwd);
-                    this.currentPage.css('-webkit-transition', '-webkit-transform 0.2s linear'); // TODO
+                    this.isDragging = true;
+                    this.initiatePageSwipe(isFwd);
                 }
-                var rotationInc = -(Math.round((this.mouseX - xCoord) * 180));
-                // console.log(rotationInc);
-                if (this.currentPageRotation + rotationInc > 0) {
-                    this.rotatePage(-this.currentPageRotation, function() {
-                        // that.concludePageTurn(false);
-                    });
-                } else if (this.currentPageRotation + rotationInc < -180) {
-                    this.rotatePage((-180 - this.currentPageRotation), function() {
-                        // that.concludePageTurn(isFwd);
-                    });
-                } else {
-                    this.rotatePage(rotationInc);
-                }
+                    // this.currentPage.css('-webkit-transition', '-webkit-transform 0.2s linear'); // TODO
+                // var rotationInc = -(Math.round((this.mouseX - xCoord) * 180));
+                // // console.log(rotationInc);
+                // if (this.currentPageRotation + rotationInc > 0) {
+                //     this.rotatePage(-this.currentPageRotation, function() {
+                //         // that.concludePageTurn(false);
+                //     });
+                // } else if (this.currentPageRotation + rotationInc < -180) {
+                //     this.rotatePage((-180 - this.currentPageRotation), function() {
+                //         // that.concludePageTurn(isFwd);
+                //     });
+                // } else {
+                //     this.rotatePage(rotationInc);
+                // }
+                var diff = xCoord - this.mouseX;
+                this.swipePageIncremental(xCoord < this.mouseX, diff);
+
                 this.mouseX = xCoord;
                 this.lastDragEvent = Date.now();
             },
 
-            endSwipeEvent               : function() {
-                var degrees = this.currentPageRotation > -90 ? (this.currentPageRotation * -1) : (-180 - this.currentPageRotation),
-                    isFwd = this.initialPageRotation === 0,
-                    that = this;
-                this.rotatePage(degrees, function() {
-                    that.concludePageTurn(isFwd);
-                });
+            endSwipeEvent               : function(xCoord) {
+                this.concludeIncrementalPageSwipe(xCoord < this.mouseX);
+                // var degrees = this.currentPageRotation > -90 ? (this.currentPageRotation * -1) : (-180 - this.currentPageRotation),
+                //     isFwd = this.initialPageRotation === 0,
+                //     that = this;
+                // // this.rotatePage(degrees, function() {
+                // //     that.concludePageTurn(isFwd);
+                // // });
                 this.isDragging = false;
             }
 

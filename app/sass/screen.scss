@@ -196,6 +196,16 @@ html, body {
     }
 }
 
+.offscreen {
+    -webkit-transform: translateX(-$pageWidth);
+    @include iphone4 {
+        -webkit-transform: translateX(-$ip4PageWidth);
+    }
+    @include iphone5 {
+        -webkit-transform: translateX(-$ip5PageWidth);
+    }
+}
+
 .note p {
     padding: 0;
     margin: 0;
@@ -242,9 +252,9 @@ html, body {
 }
 
 .page {
-    @include transform-style(preserve-3d);
-    @include transition(transform 0.3s ease-in-out);
-    @include transform(translate3d(0px, 0px, 0px));
+    // @include transform-style(preserve-3d);
+    @include transition(transform 0.2s ease-out);
+    // @include transform(translate3d(0px, 0px, 0px));
     -webkit-user-select: none;
     -moz-user-select: -moz-none;
     -ms-user-select: none;

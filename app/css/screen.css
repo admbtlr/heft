@@ -496,23 +496,35 @@ html, body {
       -webkit-transform: translateZ(0px); } }
 
 /* line 199, ../sass/screen.scss */
+.offscreen {
+  -webkit-transform: translateX(-320px); }
+  @media screen and (device-aspect-ratio: 2 / 3) {
+    /* line 199, ../sass/screen.scss */
+    .offscreen {
+      -webkit-transform: translateX(-320px); } }
+  @media screen and (device-aspect-ratio: 40 / 71) {
+    /* line 199, ../sass/screen.scss */
+    .offscreen {
+      -webkit-transform: translateX(-320px); } }
+
+/* line 209, ../sass/screen.scss */
 .note p {
   padding: 0;
   margin: 0; }
 
-/* line 204, ../sass/screen.scss */
+/* line 214, ../sass/screen.scss */
 .note h1:first-of-type {
   margin-top: 0px; }
 
-/* line 208, ../sass/screen.scss */
+/* line 218, ../sass/screen.scss */
 .first-line-bold p:first-child:first-line {
   font-weight: bold; }
 
-/* line 212, ../sass/screen.scss */
+/* line 222, ../sass/screen.scss */
 .first-line-larger p:first-child:first-line {
   font-size: 180%; }
 
-/* line 219, ../sass/screen.scss */
+/* line 229, ../sass/screen.scss */
 #book-holder {
   -webkit-perspective: 2000;
   -moz-perspective: 2000;
@@ -520,53 +532,43 @@ html, body {
   -o-perspective: 2000;
   perspective: 2000; }
 
-/* line 223, ../sass/screen.scss */
+/* line 233, ../sass/screen.scss */
 .book {
   position: relative;
   width: 640px;
   height: 460px;
   overflow: hidden; }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 223, ../sass/screen.scss */
+    /* line 233, ../sass/screen.scss */
     .book {
       width: 640px;
       height: 460px; } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 223, ../sass/screen.scss */
+    /* line 233, ../sass/screen.scss */
     .book {
       width: 640px;
       height: 548px; } }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 223, ../sass/screen.scss */
+    /* line 233, ../sass/screen.scss */
     .book {
       left: -320px; } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 223, ../sass/screen.scss */
+    /* line 233, ../sass/screen.scss */
     .book {
       left: -320px; } }
 
-/* line 244, ../sass/screen.scss */
+/* line 254, ../sass/screen.scss */
 .page {
-  -webkit-transform-style: preserve-3d;
-  -moz-transform-style: preserve-3d;
-  -ms-transform-style: preserve-3d;
-  -o-transform-style: preserve-3d;
-  transform-style: preserve-3d;
-  -webkit-transition: -webkit-transform 0.3s ease-in-out;
-  -moz-transition: -moz-transform 0.3s ease-in-out;
-  -o-transition: -o-transform 0.3s ease-in-out;
-  transition: transform 0.3s ease-in-out;
-  -webkit-transform: translate3d(0px, 0px, 0px);
-  -moz-transform: translate3d(0px, 0px, 0px);
-  -ms-transform: translate3d(0px, 0px, 0px);
-  -o-transform: translate3d(0px, 0px, 0px);
-  transform: translate3d(0px, 0px, 0px);
+  -webkit-transition: -webkit-transform 0.2s ease-out;
+  -moz-transition: -moz-transform 0.2s ease-out;
+  -o-transition: -o-transform 0.2s ease-out;
+  transition: transform 0.2s ease-out;
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
   -ms-user-select: none;
   user-select: none; }
 
-/* line 255, ../sass/screen.scss */
+/* line 265, ../sass/screen.scss */
 .side {
   box-sizing: border-box;
   position: absolute;
@@ -580,17 +582,17 @@ html, body {
   -o-backface-visibility: hidden;
   backface-visibility: hidden; }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 255, ../sass/screen.scss */
+    /* line 265, ../sass/screen.scss */
     .side {
       width: 320px;
       height: 460px; } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 255, ../sass/screen.scss */
+    /* line 265, ../sass/screen.scss */
     .side {
       width: 320px;
       height: 548px; } }
 
-/* line 274, ../sass/screen.scss */
+/* line 284, ../sass/screen.scss */
 .verso {
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
@@ -599,11 +601,11 @@ html, body {
   transform: rotateY(180deg);
   background-color: #ffe; }
 
-/* line 279, ../sass/screen.scss */
+/* line 289, ../sass/screen.scss */
 .recto {
   background-color: #ffe; }
 
-/* line 283, ../sass/screen.scss */
+/* line 293, ../sass/screen.scss */
 .flipped {
   -webkit-transform: rotateY(-180deg);
   -moz-transform: rotateY(-180deg);
@@ -611,6 +613,6 @@ html, body {
   -o-transform: rotateY(-180deg);
   transform: rotateY(-180deg); }
 
-/* line 287, ../sass/screen.scss */
+/* line 297, ../sass/screen.scss */
 #page-store {
   display: none; }

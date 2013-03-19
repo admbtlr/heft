@@ -51,9 +51,9 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
 
                 $textArea = this.$el.find('textarea');
                 // wait till $el has been added to the page so there's something to focus on...
-                window.setTimeout(function() {
-                    $textArea.focus();
-                }, 550);
+                // window.setTimeout(function() {
+                //     $textArea.focus();
+                // }, 550);
                 $textArea.one('blur', $.proxy(this.hideEditView, this));
             },
 
@@ -104,7 +104,6 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     var value = style[key];
 
                     // apply the device multiplier
-                    console.log(key+'::'+value);
                     if (_.isString(value) && value.indexOf('px') != -1) {
                         value = context.applyMultiplier(value, deviceMultiplier);
                     }
