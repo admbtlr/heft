@@ -146,22 +146,31 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 }
 
                 if (slabText) {
-                    _.defer(function($page) {
-                        var headingHeight,
-                            windowHeight = $(window).height(),
-                            paddingTop = $page.$el.css('padding-top');
-                        $page.$el.find('h1').slabText();
-                        headingHeight = $page.$el.find('h1').height();
-                        if (headingHeight + paddingTop > windowHeight) {
-                            if (headingHeight > windowHeight || Math.random() > 0.5) {
-                                paddingTop = $page.$el.css('padding-left');
-                            } else {
-                                paddingTop = windowHeight - headingHeight;
-                            }
-                            $page.$el.css('padding-top', paddingTop);
-                        }
-                    }, this);
+                    _.defer(function() {
+                        $page.find('h1').slabText();
+                    });
                 }
+
+                _.defer(function() {
+                    var contentHeight,
+                        pageHeight = $page.height(),
+                        paddingTop = Number($page.css('padding-top').slice(0, -2)),
+                        style = context.model.get('style');
+                    contentHeight = context.outerHeight($page);
+                    if (contentHeight + paddingTop < pageHeight  && context.model.get('stylable')) {
+                        if (contentHeight > pageHeight || Math.random() > 0.5) {
+                            paddingTop = $page.css('padding-left');
+                        } else if (Math.random() > 0.5) {
+                            paddingTop = Math.round((pageHeight - contentHeight) / 2);
+                        } else {
+                            paddingTop = pageHeight - contentHeight;
+                        }
+                        $page.css('padding-top', paddingTop+'px');
+                        style.paddingTop = (paddingTop / deviceMultiplier) + 'px';
+                        context.model.set('style', style);
+                        context.model.save();
+                    }
+                });
 
                 // if ($page.height() > 0 && slabText) {
                 //     $page.find('h1').slabText();
