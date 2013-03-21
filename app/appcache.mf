@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#0.55
+#0.56
 
 CACHE:
 index.html
@@ -34,6 +34,8 @@ js/templates/note.html
 js/templates/notebook.html
 js/templates/page-buttons.html
 js/templates/page.html
+js/templates/welcome.md
+js/templates/install.md
 
 js/themes/default.js
 
