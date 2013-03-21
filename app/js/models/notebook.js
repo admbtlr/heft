@@ -10,7 +10,7 @@ define(['models/note'],
                     notes.add(new Note({ content: '' }));
                 }
                 // this.currentNote = notes.at(notes.length-1);
-                this.currentNote = notes.at(0);
+                this.currentNote = notes.at(notes.length - 1);
             },
 
             getCurrentNote  : function() {

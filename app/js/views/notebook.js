@@ -61,7 +61,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 Backbone.Mediator.sub('notebook:mouselongclick', function() {
                     var nv = this.getCurrentNoteView();
                     if (nv) {
-                        nv.showEditView.apply(nv);
+                        nv.showEditView.apply(nv, [true]);
                     }
                 }, this);
             },
@@ -86,7 +86,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     nextPage.$el.remove().insertBefore(this.currentPage.$el).show();
                 }
                 if (prevPage) {
-                    prevPage.$el.remove().insertBefore(this.currentPage.$el).show();
+                    prevPage.$el.remove().addClass('offscreen').insertAfter(this.currentPage.$el).show();
                 }
 
                 return this;
@@ -111,11 +111,9 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 });
                 if (this.pagePendingDestruction == this.currentPage) {
                     if (this.isFirst()) {
-                        // this.turnForward();
                         this.swipePage(true);
                     } else {
-                        this.currentPage = this.getPrevPage();
-                        // this.turnBack();
+                        // this.currentPage = this.getPrevPage();
                         this.swipePage(false);
                     }
                 }
@@ -196,238 +194,135 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
 
             /* Page turning stuff */
 
-            turnForward                 : function() {
-                this.initialPageRotation = this.currentPageRotation = 0;
-                this.turnPage(true);
-            },
-
-            turnBack                    : function() {
-                this.initialPageRotation = this.currentPageRotation = -180;
-                this.turnPage(false);
-            },
-
-            turnPage                    : function(isFwd) {
-                var that = this;
-                this.initiatePageTurn(isFwd);
-                this.initiatePageSwipe(isFwd);
-                this.rotatePage(isFwd ? -180 : (180 + this.currentPageRotation), function() {
-                    that.concludePageTurn(isFwd);
-                });
-            },
-
             initiatePageSwipe   : function(isFwd) {
-                this.turningFwd = isFwd;
-                // var pages = this.getAdjacentPages(isFwd),
-                //     nextPage = pages[0],
-                //     prevPage = pages[1];
-                // // make sure next page is visible and immediately below current page
-                // if (nextPage) {
-                //     nextPage.$el.remove().insertBefore(this.currentPage.$el).show();
-                // }
-                // if (prevPage) {
-                //     prevPage.$el.remove().insertBefore(this.currentPage.$el).show();
-                // }
-
+                this.movingPage = isFwd ? this.currentPage : this.getPrevPage();
                 Backbone.Mediator.pub('notebook:pageturnstart');
-                // this.currentPage.sideCss('box-shadow', '10px 0 5px rgba(0, 0, 0, 0.3)', 'recto');
-                // this.currentPage.sideCss('box-shadow', '-10px 0 5px rgba(0, 0, 0, 0.3)', 'verso');
             },
 
             swipePageIncremental    : function(isFwd, diff) {
-                var transition = this.currentPage.$el.css('-webkit-transition');
-                this.currentPage.$el.css('-webkit-transition', '');
+                var transition = this.movingPage.$el.css('-webkit-transition');
+                this.movingPage.$el.css('-webkit-transition', '');
                 this.incrementalDiff = this.incrementalDiff ? this.incrementalDiff + diff : diff;
-                if (isFwd) {
-                    // if (percentage >= 50) {
-                    //     this.currentPage.css('-webkit-transform', 'translateX(0)');
-                    //     this.concludePageSwipe(isFwd);
-                    // } else {
-                    //     this.currentPage.css('-webkit-transform', 'translateX(-percentage)');
-                    // }
-                    this.currentPage.$el.css('-webkit-transform', 'translateX('+Math.round(this.incrementalDiff * 50)+'%)');
+                if (this.movingPage == this.currentPage) {
+                    this.movingPage.$el.css('-webkit-transform', 'translateX('+Math.round(this.incrementalDiff * 50)+'%)');
                 } else {
-                    this.currentPage.$el.css('-webkit-transform', 'translateX('+Math.round(this.incrementalDiff * 50)+'%)');
+                    this.movingPage.$el.css('-webkit-transform', 'translateX('+(-50 + Math.round(this.incrementalDiff * 50))+'%)');
                 }
-                this.currentPage.$el.css('-webkit-transition', transition);
+                this.movingPage.$el.css('-webkit-transition', transition);
             },
 
             swipePage   : function(isFwd) {
                 var context = this;
 
-                this.initiatePageSwipe(isFwd);
-
-                this.currentPage.$el.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function() {
-                    context.currentPage.$el.unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd");
-                    context.concludePageSwipe(isFwd);
-                });
-                this.currentPage.$el.toggleClass('offscreen');
-            },
-
-            concludeIncrementalPageSwipe    : function() {
-                var transition = this.currentPage.$el.css('-webkit-transition'),
-                    remaining;
-
-                // are we moving forwards or backwards?
-                if (this.incrementalDiff < 0) {
-                    this.currentPage.$el.css('-webkit-transform', 'translateX(-50%)');
-                } else {
-                    this.currentPage.$el.css('-webkit-transform', 'translateX(0%)');
+                if (!isFwd && this.isFirst()) {
+                    return;
                 }
 
-                this.incrementalDiff = 0;
-                this.currentPage.$el.toggleClass('offscreen');
-                this.currentPage.$el.css('-webkit-transform', ' ');
-                this.concludePageSwipe(this.turningFwd);
+                this.movingPage = isFwd ? this.currentPage : this.getPrevPage();
+
+                this.initiatePageSwipe(isFwd);
+
+                this.movingPage.$el.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function() {
+                    context.movingPage.$el.unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd");
+                    context.concludePageSwipe(isFwd);
+                });
+                this.movingPage.$el.toggleClass('offscreen');
+            },
+
+            concludeIncrementalPageSwipe    : function(isFwd) {
+                var context = this;
+                this.movingPage.$el.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function() {
+                    context.movingPage.$el.unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd");
+                    context.concludePageSwipe();
+                });
+                if (isFwd && this.movingPage == this.currentPage) {
+                    this.movingPage.$el.css('-webkit-transform', 'translateX(-50%)');
+                } else if (isFwd) {
+                    this.movingPage.$el.css('-webkit-transform', 'translateX(-50%)');
+                } else if (this.movingPage == this.currentPage) {
+                    this.movingPage.$el.css('-webkit-transform', 'translateX(0%)');
+                } else {
+                    this.movingPage.$el.css('-webkit-transform', 'translateX(0%)');
+                }
             },
 
             concludePageSwipe   : function(isFwd) {
-                var pages = this.getAdjacentPages(isFwd),
+                var pages = this.getAdjacentPages(this.movingPage),
                     nextPage = pages[0],
                     prevPage = pages[1],
-                    oldCurrentPage,
-                    oldNextPage;
-                // this.currentPage.css('-webkit-transition', '-webkit-transform 0.5s ease-in-out'); // TODO
-                // this.currentPage.sideCss('box-shadow', '');
-                // this.currentPage.sideCss('box-shadow', '');
+                    oldCurrentPage = this.currentPage;
 
-                if (false) {
-                    // we've put the current page back on top, do nothing
+                this.incrementalDiff = 0;
+
+                // possibilities:
+                // 1. we moved forward: movingPage = currentPage; movingPage.positionX < 0
+                // 2. we moved backward: movingPage != currentPage; movingPage.positionX == 0
+                // 3. we started moving forward, changed our mind: movingPage = currentPage; movingPage.positionX == 0
+                // 4. we started moving backward, changed our mind: movingPage != currentPage; movingPage.positionX < 0
+                // 1 || 2 : rearrange pages; 3 || 4 : do nothing 
+                var movingPageX = this.movingPage.$el.position().left;
+
+                if (this.movingPage == this.currentPage && movingPageX === 0 ||
+                        this.movingPage != this.currentPage && movingPageX < 0) {
+                    // we moved a page then put it back again
+                    this.movingPage.$el.css('-webkit-transform', '');
+                    this.movingPage.$el.css('-webkit-transition', '');
                 } else {
-                    oldCurrentPage = isFwd ? this.currentPage : prevPage;
+                    // we've turned a page
 
                     // once we've turned the page, the note is no longer stylable
-                    oldCurrentPage.getNote().model.set('stylable', false);
-                    oldCurrentPage.getNote().model.save();
+                    if (this.currentPage.getNote().model.get('stylable')) {
+                        this.currentPage.getNote().model.set('stylable', false);
+                        this.currentPage.getNote().model.save();
+                    }
 
-                    if (isFwd) {
+                    if (this.movingPage == this.currentPage) {
+                        // we moved forward
+                        // make sure the movingPage has the right style & class
+                        this.movingPage.$el.css('-webkit-transition', 'none');
+                        this.movingPage.$el.css('-webkit-transform', '');
+                        this.movingPage.$el.addClass('offscreen');
+                        this.movingPage.$el.css('-webkit-transition', '');
+
                         if (prevPage) {
                             prevPage.$el.remove().appendTo('#page-store');
                         }
                         this.currentPage = nextPage;
+
                         nextPage = this.getNextPage();
                         nextPage.$el.remove().insertBefore(this.currentPage.$el);
                     } else {
+                        // we moved back
+
+                        // move old prevPage to page-store
                         if (nextPage) {
-                            nextPage.$el.remove().addClass('offscreen').insertAfter(this.currentPage.$el).show();
+                            nextPage.$el.remove().appendTo('#page-store');
                         }
-                        oldNextPage = this.getNextPage(oldCurrentPage);
-                        oldNextPage.$el.remove().appendTo('#page-store');
+
+                        // set currentPage to movingPage (i.e. prev page)
+                        this.currentPage = this.movingPage;
+                        this.movingPage.$el.css('-webkit-transition', 'none');
+                        this.movingPage.$el.css('-webkit-transform', '');
+                        this.movingPage.$el.removeClass('offscreen');
+                        this.movingPage.$el.css('-webkit-transition', '');
+
+                        prevPage = this.getPrevPage();
+                        if (prevPage) {
+                            prevPage.$el.remove().addClass('offscreen').insertAfter(this.currentPage.$el);
+                        }
                     }
 
                     if (this.currentPage.$el.find('textarea').length > 0) {
                         this.currentPage.$el.find('textarea').focus();
                     }
-                }
-                this.isTurning = false;
-                this.currentPageRotation = 0;
-                this.initialPageRotation = '';
-                if (this.pagePendingDestruction) {
-                    this.pagePendingDestruction.$el.remove();
-                    this.pagePendingDestruction = null;
-                }
-                Backbone.Mediator.pub('notebook:pageturnend');
-                Backbone.Mediator.pub('notedeselected', oldCurrentPage);
-                Backbone.Mediator.pub('noteselected', this.currentPage);
-            },
 
-            initiatePageTurn            : function(isFwd) {
-                var pages = this.getAdjacentPages(isFwd),
-                    nextPage = pages[0],
-                    prevPage = pages[1];
-
-                Backbone.Mediator.pub('notebook:pageturnstart');
-
-                thi = true;
-
-                this.currentPage.sideCss('box-shadow', '10px 0 5px rgba(0, 0, 0, 0.3)', 'recto');
-                this.currentPage.sideCss('box-shadow', '-10px 0 5px rgba(0, 0, 0, 0.3)', 'verso');
-
-                if (isFwd) {
-                    this.currentPageRotation = this.initialPageRotation = 0;
-                } else if (!this.isDoubleSpread) {
-                    this.currentPageRotation = -91;
-                    this.initialPageRotation = -180;
-                } else {
-                    this.currentPageRotation = this.initialPageRotation = -180;
-                }
-
-                // make sure next page is visible and immediately below current page
-                if (nextPage) {
-                    nextPage.$el.remove().insertBefore(this.currentPage.$el).show();
-                }
-                if (prevPage) {
-                    prevPage.$el.remove().insertBefore(this.currentPage.$el).show();
-                }
-            },
-
-            concludePageTurn            : function(isFwd) {
-                var pages = this.getAdjacentPages(isFwd),
-                    nextPage = pages[0],
-                    prevPage = pages[1],
-                    oldCurrentPage;
-                this.currentPage.css('-webkit-transition', '-webkit-transform 0.5s ease-in-out'); // TODO
-                this.currentPage.sideCss('box-shadow', '');
-                if (this.initialPageRotation === this.currentPageRotation) {
-                    // put the next page back into the page store
-                    if (nextPage && nextPage.length) {
-                        nextPage.$el.remove().appendTo('#page-store');
+                    if (this.pagePendingDestruction) {
+                        this.pagePendingDestruction.$el.remove();
+                        this.pagePendingDestruction = null;
                     }
-                } else {
-
-                    oldCurrentPage = isFwd ? this.currentPage : prevPage;
-
-                    // once we've turned the page, the note is no longer stylable
-                    oldCurrentPage.getNote().model.set('stylable', false);
-                    oldCurrentPage.getNote().model.save();
-
-                    // move nextPage to front, previous previous page to page-store
-                    if (prevPage) {
-                        prevPage.$el.remove().appendTo('#page-store');
-                    }
-                    if (nextPage) {
-                        if (isFwd) {
-                            this.currentPage.$el.remove().insertBefore(nextPage.$el);
-                        } else {
-                            nextPage.$el.remove().insertAfter(this.currentPage.$el);
-                        }
-                    }
-                    // if we just turned back, the currentPage stays the same
-                    // if we turned forward, increment it
-                    if (isFwd) {
-                        this.currentPage = nextPage;
-                    }
-
-                    if (this.currentPage.$el.find('textarea').length > 0) {
-                        this.currentPage.$el.find('textarea').focus();
-                    }
-                }
-                this.isTurning = false;
-                this.currentPageRotation = 0;
-                this.initialPageRotation = '';
-                if (this.pagePendingDestruction) {
-                    this.pagePendingDestruction.$el.remove();
-                    this.pagePendingDestruction = null;
-                }
-                Backbone.Mediator.pub('notebook:pageturnend');
-                Backbone.Mediator.pub('notedeselected', oldCurrentPage);
-                Backbone.Mediator.pub('noteselected', this.currentPage);
-            },
-
-            rotatePage                  : function(degrees, callback) {
-                var that = this;
-                if (degrees === 0) {
-                    if (callback) {
-                        callback.call();
-                    }
-                } else {
-                    this.currentPageRotation = this.currentPageRotation + degrees;
-                    if (callback) {
-                        this.currentPage.$el.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function() {
-                            that.currentPage.$el.unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd");
-                            callback.call();
-                        });
-                    }
-                    this.currentPage.css('-webkit-transform', 'rotateY('+this.currentPageRotation+'deg)');
+                    Backbone.Mediator.pub('notebook:pageturnend');
+                    Backbone.Mediator.pub('notedeselected', oldCurrentPage);
+                    Backbone.Mediator.pub('noteselected', this.currentPage);
                 }
             },
 
@@ -461,7 +356,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 this.mouseX = a.xCoord;
                 this.mouseY = a.yCoord;
 
-                this.longClickTimerId = window.setTimeout(that.handleLongClickEvent, 1000);
+                this.longClickTimerId = window.setTimeout(that.handleLongClickEvent, 500);
 
                 Backbone.Mediator.pub('notebook:mousedown');
                 // this.initiateSwipeEvent(a.xCoord);
@@ -511,6 +406,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 }
                 if (this.isDragging) {
                     this.endSwipeEvent(a.xCoord);
+                    this.isDragging = false;
                 } else {
                     if (distance < minDistance) {
                         this.handleClickEvent();
@@ -525,8 +421,10 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 if (e.touches || e.changedTouches) {
                     analysed.isTouch = true;
                     var touch = e.touches[0] || e.changedTouches[0];
-                    analysed.xCoord = this.normaliseXCoord(touch.pageX);
-                    analysed.yCoord = this.normaliseYCoord(touch.pageY);
+                    // analysed.xCoord = this.normaliseXCoord(touch.pageX);
+                    // analysed.yCoord = this.normaliseYCoord(touch.pageY);
+                    analysed.xCoord = touch.pageX / $(window).width();
+                    analysed.yCoord = touch.pageY / $(window).height();
                 } else {
                     analysed.isTouch = false;
                     analysed.xCoord = this.normaliseXCoord(e.pageX);
@@ -552,12 +450,11 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
 
             handleClickEvent    : function(e) {
                 if (!this.isTurning) {
-                    if (this.mouseX < 0.2 && !this.isFirst()) {
-                        this.currentPage = this.getPrevPage();
-                        // this.turnBack();
+                    // TODO page references out of this code
+                    if (this.mouseX < 0.2/* && !this.isFirst()*/) {
+                        // this.currentPage = this.getPrevPage();
                         this.swipePage(false);
                     } else if (this.mouseX > 0.8) {
-                        // this.turnForward();
                         this.swipePage(true);
                     } else {
                         Backbone.Mediator.pub('notebook:mouseclick');
@@ -577,46 +474,12 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 Backbone.Mediator.pub('notebook:mouselongclick');
             },
 
-            // initiateSwipeEvent  : function(xCoord) {
-            //     this.mouseX = xCoord;
-            // },
-
-            // initiateForwardSwipeEvent   : function(xCoord) {
-            //     if (!this.isLast()) {
-            //         this.isDragging = true;
-            //         this.incrementalDiff = 0;
-            //         this.currentPageRotation = this.initialPageRotation = 0;
-            //         this.mouseX = xCoord;
-            //     }
-            // },
-
-            // initiateBackwardSwipeEvent  : function(xCoord) {
-            //     if (!this.isFirst()) {
-            //         this.currentPage = this.getPrevPage();
-            //         this.incrementalDiff = 0;
-            //         this.isDragging = true;
-            //         this.currentPageRotation = this.initialPageRotation = -180;
-            //         this.mouseX = xCoord;
-            //     }
-            // },
-
             continueSwipeEvent          : function(xCoord) {
                 var isFwd;
 
                 // initiate the drag
-                // which page is being dragged, the current, or the last one?
                 if (!this.isDragging) {
                     isFwd = xCoord < this.mouseX;
-                    if (!isFwd) {
-                        if (this.isFirst()) {
-                            return;
-                        }
-                        this.currentPage = this.getPrevPage();
-                    } else {
-                        if (this.isLast()) {
-                            return;
-                        }
-                    }
                     this.isDragging = true;
                     this.initiatePageSwipe(isFwd);
                 }
@@ -636,13 +499,15 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 // }
                 var diff = xCoord - this.mouseX;
                 this.swipePageIncremental(xCoord < this.mouseX, diff);
+                this.isSwipeForward = xCoord < this.mouseX;
 
                 this.mouseX = xCoord;
                 this.lastDragEvent = Date.now();
             },
 
             endSwipeEvent               : function(xCoord) {
-                this.concludeIncrementalPageSwipe(xCoord < this.mouseX);
+                this.concludeIncrementalPageSwipe(this.isSwipeForward);
+                this.mouseX = 0;
                 // var degrees = this.currentPageRotation > -90 ? (this.currentPageRotation * -1) : (-180 - this.currentPageRotation),
                 //     isFwd = this.initialPageRotation === 0,
                 //     that = this;

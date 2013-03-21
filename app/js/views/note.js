@@ -40,7 +40,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 this.$el.css('display', '');
             },
 
-            showEditView    : function() {
+            showEditView    : function(focus) {
                 var html = this.editTemplate(this.toJSON(true)),
                     $editView = $(html),
                     $textArea;
@@ -50,10 +50,13 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 });
 
                 $textArea = this.$el.find('textarea');
-                // wait till $el has been added to the page so there's something to focus on...
-                // window.setTimeout(function() {
-                //     $textArea.focus();
-                // }, 550);
+
+                if (focus) {
+                    // wait till $el has been added to the page so there's something to focus on...
+                    window.setTimeout(function() {
+                        $textArea.focus();
+                    }, 550);
+                }
                 $textArea.one('blur', $.proxy(this.hideEditView, this));
             },
 
@@ -74,11 +77,13 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
             },
 
             renderStyle     : function() {
-                var $page = this.$el.find('.note'),
+                var $page,
+                    html = this.template(this.toJSON()),
                     style = this.model.get('style'),
                     styleMap = {},
                     classesToAdd = [],
                     classesToRemove = [],
+                    slabText = false,
                     deviceMultiplier = 0.666;
 
                 // no style? deal with it!
@@ -88,8 +93,8 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 }
 
                 // clear all existing css
-                $page.attr('style', '');
-                $page.children().attr('style', '');
+                this.$el.children('.note').replaceWith($(html));
+                $page = this.$el.find('.note');
 
                 // to get bg colors on the main h1, there might be (or need to be) a span inserted
                 this.addOrRemoveSpans($page, style);
@@ -124,6 +129,8 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                         _.each(selectors, function(s) { selector += s+' '; });
                         // $page.find(selector).css(context.styleHyphenFormat(pieces[1]), (_.isArray(style[key]) ? context.arrayToRGB(style[key]) : style[key]));
                         $page.find(selector).css(context.styleHyphenFormat(pieces[1]), value);
+                    } else if (key == 'slabText') {
+                        slabText = style[key];
                     } else {
                         styleMap[key] = value;
                         // $page.css(context.styleHyphenFormat(key), style[key]);
@@ -134,10 +141,31 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 $page.addClass(_.reduce(classesToAdd, function(memo, klass) { return memo+klass+' '; }, ''));
                 $page.removeClass(_.reduce(classesToRemove, function(memo, klass) { return memo+klass+' '; }, ''));
 
-                // hmmm...
                 if ($page.height() > 0 && !this.model.get('pageFitted')) {
                     this.fitToPage();
                 }
+
+                if (slabText) {
+                    _.defer(function($page) {
+                        var headingHeight,
+                            windowHeight = $(window).height(),
+                            paddingTop = $page.$el.css('padding-top');
+                        $page.$el.find('h1').slabText();
+                        headingHeight = $page.$el.find('h1').height();
+                        if (headingHeight + paddingTop > windowHeight) {
+                            if (headingHeight > windowHeight || Math.random() > 0.5) {
+                                paddingTop = $page.$el.css('padding-left');
+                            } else {
+                                paddingTop = windowHeight - headingHeight;
+                            }
+                            $page.$el.css('padding-top', paddingTop);
+                        }
+                    }, this);
+                }
+
+                // if ($page.height() > 0 && slabText) {
+                //     $page.find('h1').slabText();
+                // }
 
             },
 
@@ -146,7 +174,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     multiplied = '';
                 _.each(pieces, function(p) {
                     if (p.indexOf('px') != -1) {
-                        p = (Number(p.slice(0, -2)) * multiplier) + 'px';
+                        p = Math.round(Number(p.slice(0, -2)) * multiplier) + 'px';
                     }
                     multiplied = multiplied+p+' ';
                 });
@@ -178,42 +206,69 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 return propertyName.replace(/[A-Z]/g, upperToHyphenLower);
             },
 
+            // fitToPage   : function() {
+            //     var $page = this.$el.find('.note'),
+            //         fontSizeNum = Number(this.model.get('style').fontSize.slice(0, -2)),
+            //         h1FontSizeNum = Number(this.model.get('style').h1__fontSize.slice(0, -2)),
+            //         pMarginTopNum = Number(this.model.get('style').p__marginTop.slice(0, -2)),
+            //         lineHeight = this.model.get('style').lineHeight,
+            //         h1LineHeight = this.model.get('style').h1__lineHeight,
+            //         paddingNum = Number(this.model.get('style').padding.slice(0, -2)),
+            //         height = this.outerHeight($page),
+            //         width = this.outerWidth($page);
+            //     console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum);
+            //     while ((height > $page.height() || width > $page.width()) && fontSizeNum > 27) {
+            //         console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum+'::'+h1FontSizeNum);
+
+            //         if (fontSizeNum <= 28 && h1FontSizeNum <= 1.6) {
+            //             break;
+            //         }
+
+            //         height = 0;
+            //         fontSizeNum = Math.round(fontSizeNum * 0.9) > 28 ? Math.round(fontSizeNum * 0.9) : 28;
+            //         h1FontSizeNum = h1FontSizeNum < 1.6 ? h1FontSizeNum : parseFloat(h1FontSizeNum * 0.95).toFixed(1);
+            //         h1ineHeight = Math.round(h1LineHeight * 0.9);
+            //         pMarginTopNum = pMarginTopNum > 10 ? Math.round(pMarginTopNum * 0.9) : 10;
+            //         paddingNum = paddingNum > 4 ? Math.round(paddingNum * 0.8) : paddingNum;
+            //         $page.css('font-size', fontSizeNum + 'px');
+            //         $page.css('padding', paddingNum + 'px');
+            //         $page.children('h1').css('font-size', h1FontSizeNum+'em');
+            //         $page.children('h1').css('line-height', h1LineHeight);
+            //         height = this.outerHeight($page);
+            //         width = this.outerWidth($page);
+            //     }
+            //     console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum+'::'+h1FontSizeNum);
+            //     var remainder = $page.height() - height,
+            //         paddingTop = remainder > 0 ? [paddingNum, remainder / 2.0, remainder-paddingNum][Math.round(Math.random() * 2)] : Math.round(Math.random() * 30);
+            //     // $($page.children()[0]).css('margin-top', marginTop);
+            //     // this.model.get('style').p_marginTop = marginTop;
+            //     this.model.get('style').fontSize = fontSizeNum + 'px';
+            //     this.model.get('style').padding = paddingTop + 'px ' + paddingNum + 'px ' + paddingNum + 'px';
+            //     this.model.get('style').h1__fontSize = h1FontSizeNum+'em';
+            //     this.model.get('style').h1__lineHeight = h1LineHeight;
+            //     this.model.get('style').p__marginTop = pMarginTopNum+'px';
+            //     this.model.set('pageFitted', true);
+            //     this.renderStyle();
+            // },
+
             fitToPage   : function() {
                 var $page = this.$el.find('.note'),
-                    fontSizeNum = Number(this.model.get('style').fontSize.slice(0, -2)),
                     h1FontSizeNum = Number(this.model.get('style').h1__fontSize.slice(0, -2)),
-                    pMarginTopNum = Number(this.model.get('style').p__marginTop.slice(0, -2)),
-                    lineHeight = this.model.get('style').lineHeight,
-                    h1LineHeight = this.model.get('style').h1__lineHeight,
                     paddingNum = Number(this.model.get('style').padding.slice(0, -2)),
-                    height = this.outerHeight($page),
                     width = this.outerWidth($page);
-                console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum);
-                while ((height > $page.height() || width > $page.width()) && fontSizeNum > 28) {
-                    console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum+'::'+h1FontSizeNum);
-                    height = 0;
-                    fontSizeNum = Math.round(fontSizeNum * 0.9);
-                    h1FontSizeNum = h1FontSizeNum < 1.4 ? h1FontSizeNum : h1FontSizeNum * 0.9;
-                    h1ineHeight = Math.round(h1LineHeight * 0.9);
-                    pMarginTopNum = Math.round(pMarginTopNum * 0.9);
-                    paddingNum = Math.round(paddingNum * 0.8);
-                    $page.css('font-size', fontSizeNum + 'px');
+                while (width > $page.width() && h1FontSizeNum > 1.6) {
+                    h1FontSizeNum = h1FontSizeNum < 1.6 ? h1FontSizeNum : parseFloat(h1FontSizeNum * 0.95).toFixed(1);
+                    paddingNum = paddingNum > 4 ? Math.round(paddingNum * 0.8) : paddingNum;
                     $page.css('padding', paddingNum + 'px');
                     $page.children('h1').css('font-size', h1FontSizeNum+'em');
-                    $page.children('h1').css('line-height', h1LineHeight);
-                    height = this.outerHeight($page);
                     width = this.outerWidth($page);
                 }
-                console.log($page.height()+'::'+height+'::'+$page.width()+'::'+width+'::'+fontSizeNum+'::'+h1FontSizeNum);
-                var remainder = $page.height() - height,
-                    paddingTop = remainder > 0 ? [paddingNum, remainder / 2.0, remainder-paddingNum][Math.round(Math.random() * 2)] : Math.round(Math.random() * 30);
+                // var remainder = $page.height() - height,
+                //     paddingTop = remainder > 0 ? [paddingNum, remainder / 2.0, remainder-paddingNum][Math.round(Math.random() * 2)] : Math.round(Math.random() * 30);
                 // $($page.children()[0]).css('margin-top', marginTop);
                 // this.model.get('style').p_marginTop = marginTop;
-                this.model.get('style').fontSize = fontSizeNum + 'px';
-                this.model.get('style').padding = paddingTop + 'px ' + paddingNum + 'px ' + paddingNum + 'px';
+                this.model.get('style').padding = paddingNum + 'px';
                 this.model.get('style').h1__fontSize = h1FontSizeNum+'em';
-                this.model.get('style').h1__lineHeight = h1LineHeight;
-                this.model.get('style').p__marginTop = pMarginTopNum+'px';
                 this.model.set('pageFitted', true);
                 this.renderStyle();
             },
@@ -237,7 +292,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
 
             outerWidth  : function($el) {
                 var width = 0,
-                    padding = Number($el.css('padding').slice(0, -2)) * 2,
+                    padding = Number($el.css('padding-left').slice(0, -2)) * 2,
                     borderWidth = Number($el.css('border-width').slice(0, -2)) * 2;
                 $el.children().each(function() {
                     var w = this.scrollWidth;

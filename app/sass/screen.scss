@@ -158,9 +158,6 @@ html, body {
     color: $editorFg;
     border: 0px;
     font: 18px/26px 'SourceCodePro';
-    @include iphone {
-        font: 26px/36px 'SourceCodePro';
-    }
 }
 #note-edit-form textarea:focus {
     outline: 0;
@@ -296,4 +293,22 @@ html, body {
 
 #page-store {
     display: none;
+}
+
+.slabtexted .slabtext {
+    display:-moz-inline-box;
+    display:inline-block;
+    white-space:nowrap;
+}
+.slabtextinactive .slabtext {
+    display:inline;
+    white-space:normal;
+    font-size:1em !important;
+    letter-spacing:inherit !important;
+    word-spacing:inherit !important;
+    *letter-spacing:0 !important;
+    *word-spacing:0 !important;
+}
+.slabtextdone .slabtext {
+    display:block;
 }
