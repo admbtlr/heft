@@ -1,13 +1,27 @@
-define(['models/note'],
+define(['models/note', 'text!templates/install.md', 'text!templates/welcome.md'],
 
-    function(Note) {
+    function(Note, installText, welcomeText) {
 
         var Notebook = Backbone.Model.extend({
 
             initialize  : function(notes) {
+                var n;
                 this.notes = notes;
-                if (notes.length === 0) {
-                    notes.add(new Note({ content: '' }));
+                if (!window.navigator.standalone && notes.length === 0) {
+                    n = new Note({
+                        content: installText,
+                        install: true
+                    });
+                    notes.add(n);
+                    n.save();
+                } else if (notes.length === 0 || notes.at(0).get('install')) {
+                    notes.reset();
+                    n = new Note({
+                        content: welcomeText,
+                        stylable: true
+                    });
+                    notes.add(n);
+                    n.save();
                 }
                 // this.currentNote = notes.at(notes.length-1);
                 this.currentNote = notes.at(notes.length - 1);

@@ -49,8 +49,8 @@ define([],
         };
 
         defaultTheme.makeFonts = function(theme) {
-            var hFontsSans = ['BebasNeueRegular', 'BlackoutMidnight', 'LeagueGothicRegular', 'CabinBold', 'CabinBoldItalic'],
-                hFontsSerif = ['ChunkFiveRegular', 'MuseoSlab', 'PTSerifBold'],
+            var hFontsSans = ['BebasNeueRegular', 'BlackoutMidnight', 'LeagueGothicRegular', 'CabinBold', 'CabinBoldItalic', 'CabinRegular'],
+                hFontsSerif = ['ChunkFiveRegular', 'MuseoSlab', 'PTSerifBold', 'PTSerifRegular'],
                 pFontsSans = ['CabinRegular', 'JunctionRegular'],
                 pFontsSerif = ['MuseoSlab', 'PTSerifRegular'],
                 headingSerif = Math.random() > 0.6,
@@ -58,14 +58,37 @@ define([],
                 fonts = {};
 
             if (bodySerif) {
-                fonts.fontFamily = pFontsSerif[Math.round(Math.random()*(pFontsSerif.length - 1))];
+                fonts.fontFamily = pFontsSerif[Math.floor(Math.random()*(pFontsSerif.length - 1))];
             } else {
-                fonts.fontFamily = pFontsSans[Math.round(Math.random()*(pFontsSans.length - 1))];
+                fonts.fontFamily = pFontsSans[Math.floor(Math.random()*(pFontsSans.length - 1))];
             }
             if (headingSerif) {
-                fonts.h1__fontFamily = hFontsSerif[Math.round(Math.random()*(hFontsSerif.length - 1))];
+                fonts.h1__fontFamily = hFontsSerif[Math.floor(Math.random()*(hFontsSerif.length - 1))];
             } else {
-                fonts.h1__fontFamily = hFontsSans[Math.round(Math.random()*(hFontsSans.length - 1))];
+                fonts.h1__fontFamily = hFontsSans[Math.floor(Math.random()*(hFontsSans.length - 1))];
+            }
+            if (fonts.fontFamily == 'CabinRegular') {
+                fonts.p_em__fontFamily = 'CabinItalic';
+                fonts.p_em__fontStyle = 'normal';
+                fonts.p_strong__fontFamily = 'CabinBold';
+                fonts.p_strong__fontWeight = 'normal';
+            } else if (fonts.fontFamily == 'PTSerifRegular') {
+                fonts.p_em__fontFamily = 'PTSerifItalic';
+                fonts.p_em__fontStyle = 'normal';
+                fonts.p_strong__fontFamily = 'PTSerifBold';
+                fonts.p_strong__fontWeight = 'normal';
+            }
+            if (fonts.h1__fontFamily == 'CabinBold') {
+                fonts.h1_em__fontFamily = 'CabinBoldItalic';
+                fonts.h1_em__fontStyle = 'normal';
+            } else if (fonts.h1__fontFamily == 'CabinRegular') {
+                fonts.h1_em__fontFamily = 'CabinItalic';
+                fonts.h1_em__fontStyle = 'normal';
+            } else if (fonts.h1__fontFamily == 'PTSerifRegular') {
+                fonts.h1_em__fontFamily = 'PTSerifItalic';
+                fonts.h1_em__fontStyle = 'normal';
+            } else {
+                fonts.h1_em__fontStyle = 'normal';
             }
 
             return fonts;
@@ -132,6 +155,8 @@ define([],
 
             colors.backgroundColor = this.arrayToHSL(bgData);
             colors.color = this.arrayToHSL(fgData);
+            colors.a__color = this.arrayToHSL(fgData);
+            colors['a:visited__color'] = this.arrayToHSL(fgData);
             colors.h1__color = this.arrayToHSL(hData);
 
             return colors;

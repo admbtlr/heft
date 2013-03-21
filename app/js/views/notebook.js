@@ -295,7 +295,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                         // we moved back
 
                         // move old prevPage to page-store
-                        if (nextPage) {
+                        if (nextPage && nextPage != this.movingPage) {
                             nextPage.$el.remove().appendTo('#page-store');
                         }
 

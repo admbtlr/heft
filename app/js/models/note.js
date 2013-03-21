@@ -23,7 +23,7 @@ define(['themes/default'],
             },
 
             setRandomStyle  : function() {
-                if (this.get('stylable')) {
+                if (this.get('stylable') !== false) {
                     this.set('pageFitted', false);
                     // this.set('style', this.makeRandomStyle());
                     this.set('style', theme.getTheme(this));
