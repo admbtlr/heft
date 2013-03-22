@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#0.61
+#0.66
 
 CACHE:
 index.html

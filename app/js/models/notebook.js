@@ -8,12 +8,14 @@ define(['models/note', 'text!templates/install.md', 'text!templates/welcome.md',
                 var n, n2;
                 this.notes = notes;
                 if (!window.navigator.standalone) {
+                    notes.reset();
                     n = new Note({
                         content: installText,
                         install: true
                     });
                     notes.add(n);
                     n.save();
+                    this.currentNote = n;
                 } else if (notes.length === 0 || notes.at(0).get('install')) {
                     notes.reset();
                     n = new Note({
