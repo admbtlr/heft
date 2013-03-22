@@ -7,7 +7,7 @@ define(['models/note', 'text!templates/install.md', 'text!templates/welcome.md',
             initialize  : function(notes) {
                 var n, n2;
                 this.notes = notes;
-                if (!window.navigator.standalone && notes.length === 0) {
+                if (!window.navigator.standalone) {
                     n = new Note({
                         content: installText,
                         install: true
