@@ -55,8 +55,18 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     this.removePage.apply(this, [nv]);
                 }, this);
                 Backbone.Mediator.sub('note:randomisestyle', function() {
-                    this.getCurrentNoteView().model.setRandomStyle();
-                    Backbone.Mediator.pub('note:styleupdated', this.currentPage);
+                    if (this.getCurrentNoteView().model.get('stylable')) {
+                        var $noteEl = this.getCurrentNoteView().$el;
+                        $noteEl.css('-webkit-transition', '-webkit-transform .4s ease-out');
+                        $noteEl.bind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd", function() {
+                            $noteEl.unbind("transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd");
+                            $noteEl.css('-webkit-transition', '');
+                            $noteEl.css('-webkit-transform', '');
+                        });
+                        $noteEl.css('-webkit-transform', 'rotateZ(360deg)');
+                        this.getCurrentNoteView().model.setRandomStyle();
+                        Backbone.Mediator.pub('note:styleupdated', this.currentPage);
+                    }
                 }, this);
                 Backbone.Mediator.sub('notebook:mouselongclick', function() {
                     var nv = this.getCurrentNoteView();
@@ -195,6 +205,10 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
             /* Page turning stuff */
 
             initiatePageSwipe   : function(isFwd) {
+                if (!isFwd && this.isFirst()) {
+                    this.isDragging = false;
+                    return;
+                }
                 this.movingPage = isFwd ? this.currentPage : this.getPrevPage();
                 Backbone.Mediator.pub('notebook:pageturnstart');
             },
@@ -482,27 +496,14 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     isFwd = xCoord < this.mouseX;
                     this.isDragging = true;
                     this.initiatePageSwipe(isFwd);
-                }
-                    // this.currentPage.css('-webkit-transition', '-webkit-transform 0.2s linear'); // TODO
-                // var rotationInc = -(Math.round((this.mouseX - xCoord) * 180));
-                // // console.log(rotationInc);
-                // if (this.currentPageRotation + rotationInc > 0) {
-                //     this.rotatePage(-this.currentPageRotation, function() {
-                //         // that.concludePageTurn(false);
-                //     });
-                // } else if (this.currentPageRotation + rotationInc < -180) {
-                //     this.rotatePage((-180 - this.currentPageRotation), function() {
-                //         // that.concludePageTurn(isFwd);
-                //     });
-                // } else {
-                //     this.rotatePage(rotationInc);
-                // }
-                var diff = xCoord - this.mouseX;
-                this.swipePageIncremental(xCoord < this.mouseX, diff);
-                this.isSwipeForward = xCoord < this.mouseX;
+                } else {
+                    var diff = xCoord - this.mouseX;
+                    this.swipePageIncremental(xCoord < this.mouseX, diff);
+                    this.isSwipeForward = xCoord < this.mouseX;
 
-                this.mouseX = xCoord;
-                this.lastDragEvent = Date.now();
+                    this.mouseX = xCoord;
+                    this.lastDragEvent = Date.now();
+                }
             },
 
             endSwipeEvent               : function(xCoord) {

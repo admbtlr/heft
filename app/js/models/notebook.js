@@ -1,11 +1,11 @@
-define(['models/note', 'text!templates/install.md', 'text!templates/welcome.md'],
+define(['models/note', 'text!templates/install.md', 'text!templates/welcome.md', 'text!templates/next.md'],
 
-    function(Note, installText, welcomeText) {
+    function(Note, installText, welcomeText, nextText) {
 
         var Notebook = Backbone.Model.extend({
 
             initialize  : function(notes) {
-                var n;
+                var n, n2;
                 this.notes = notes;
                 if (!window.navigator.standalone && notes.length === 0) {
                     n = new Note({
@@ -18,13 +18,22 @@ define(['models/note', 'text!templates/install.md', 'text!templates/welcome.md']
                     notes.reset();
                     n = new Note({
                         content: welcomeText,
-                        stylable: true
+                        stylable: true,
+                        pageFitted: false
                     });
                     notes.add(n);
                     n.save();
+                    n2 = new Note({
+                        content: nextText,
+                        stylable: true,
+                        pageFitted: false
+                    });
+                    notes.add(n2);
+                    n2.save();
+                    this.currentNote = n;
+                } else {
+                    this.currentNote = notes.at(notes.length - 1);
                 }
-                // this.currentNote = notes.at(notes.length-1);
-                this.currentNote = notes.at(notes.length - 1);
             },
 
             getCurrentNote  : function() {

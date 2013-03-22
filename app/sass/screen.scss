@@ -51,6 +51,13 @@
     }
 }
 
+@mixin landscape {
+    @media screen and (orientation: landscape) { 
+        @content;
+    }
+}
+
+
 * { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
 
 * { -webkit-tap-highlight-color: rgba(0,0,0,0); }
@@ -127,6 +134,8 @@ html, body {
     height: 100%;
     min-height: 100%;
     -webkit-overflow-scrolling: touch;
+    background-image: url(/img/splash-4.png);
+    background-size: 320px 460px;
     // padding: 50px;
 }
 
@@ -245,6 +254,9 @@ html, body {
     }
     @include iphone5 {
         left: -$ip5PageWidth;
+    }
+    @include landscape {
+        -webkit-transform: scale(1.5);
     }
 }
 

@@ -10,8 +10,8 @@
     if (typeof window.DeviceMotionEvent !== 'undefined') {
         $.onshake = function(callb, sens) {
             // Shake sensitivity (a lower number is more sensitive)
-            var sensitivity = sens || 15,
-                checkDelay = 150,
+            var sensitivity = sens || 12,
+                checkDelay = 250,
                 callbackDelay = 500;
 
             // Position variables

@@ -146,12 +146,12 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 }
 
                 if (slabText) {
-                    _.defer(function() {
+                    _.delay(function() {
                         $page.find('h1').slabText();
-                    });
+                    }, 700);
                 }
 
-                _.defer(function() {
+                _.delay(function() {
                     var contentHeight,
                         pageHeight = $page.height(),
                         paddingTop = Number($page.css('padding-top').slice(0, -2)),
@@ -170,7 +170,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                         context.model.set('style', style);
                         context.model.save();
                     }
-                });
+                }, 800);
 
                 // if ($page.height() > 0 && slabText) {
                 //     $page.find('h1').slabText();

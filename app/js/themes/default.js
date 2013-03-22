@@ -58,14 +58,14 @@ define([],
                 fonts = {};
 
             if (bodySerif) {
-                fonts.fontFamily = pFontsSerif[Math.floor(Math.random()*(pFontsSerif.length - 1))];
+                fonts.fontFamily = pFontsSerif[Math.floor(Math.random()*(pFontsSerif.length))];
             } else {
-                fonts.fontFamily = pFontsSans[Math.floor(Math.random()*(pFontsSans.length - 1))];
+                fonts.fontFamily = pFontsSans[Math.floor(Math.random()*(pFontsSans.length))];
             }
             if (headingSerif) {
-                fonts.h1__fontFamily = hFontsSerif[Math.floor(Math.random()*(hFontsSerif.length - 1))];
+                fonts.h1__fontFamily = hFontsSerif[Math.floor(Math.random()*(hFontsSerif.length))];
             } else {
-                fonts.h1__fontFamily = hFontsSans[Math.floor(Math.random()*(hFontsSans.length - 1))];
+                fonts.h1__fontFamily = hFontsSans[Math.floor(Math.random()*(hFontsSans.length))];
             }
             if (fonts.fontFamily == 'CabinRegular') {
                 fonts.p_em__fontFamily = 'CabinItalic';
@@ -113,8 +113,6 @@ define([],
                 hData,
                 fgColor;
 
-            console.log('HUE: '+hue);
-
             bgData      = [hue, Math.random() > (isBgDark ? 0.4 : 0.7) ? (isBgExtreme ? 50 : 80) : 20];
             fgData      = [hue, bgData[1] == 20 ? 80 : 20];
             hData       = [hue, bgData[1] == 20 ? 80 : 20];
@@ -122,7 +120,7 @@ define([],
             if (isBgExtreme) {
                 bgData.push(isBgDark ? 10 : 90);
             } else {
-                bgData.push(isBgDark ? 40 : 60);
+                bgData.push(isBgDark ? 30 : 60);
             }
 
             if (Math.random() < 0.5) {

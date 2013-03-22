@@ -1,11 +1,13 @@
 CACHE MANIFEST
 
-#0.56
+#0.60
 
 CACHE:
 index.html
 css/screen.css
 css/font-awesome.css
+
+img/splash-4.png
 
 js/lib/require.js
 
@@ -21,6 +23,7 @@ js/libs/text.js
 js/libs/underscore.js
 js/libs/zepto.js
 js/libs/zepto.onshake.js
+js/libs/zepto.slabtext.js
 
 js/models/note.js
 js/models/notebook.js
@@ -36,6 +39,7 @@ js/templates/page-buttons.html
 js/templates/page.html
 js/templates/welcome.md
 js/templates/install.md
+js/templates/next.md
 
 js/themes/default.js
 
