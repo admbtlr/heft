@@ -97,9 +97,9 @@ define([],
         defaultTheme.hslColors = function(theme) {
             var colors      = {},
                 hue         = this.getRandomHue(),
-                isBgDark    = Math.random() < 0.3,
+                isBgDark    = Math.random() < 0.5,
                 isBgLight   = !isBgDark,
-                isBgExtreme = Math.random() < (hue < 40 ? 0.8 : 0.6),
+                isBgExtreme = Math.random() < (hue < 40 ? 0.6 : 0.4),
                 isWhiteShadow = Math.random() < 0.1,
                 isOutline   = !isWhiteShadow && Math.random() < 0.1,
                 isInlaid    = !isWhiteShadow && !isOutline && Math.random() < 0.1,
@@ -112,7 +112,7 @@ define([],
                 fgData,
                 hData,
                 fgColor;
-
+ 
             bgData      = [hue, Math.random() > (isBgDark ? 0.4 : 0.7) ? (isBgExtreme ? 50 : 80) : 20];
             fgData      = [hue, bgData[1] == 20 ? 80 : 20];
             hData       = [hue, bgData[1] == 20 ? 80 : 20];
