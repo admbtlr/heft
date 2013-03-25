@@ -10,6 +10,7 @@ define([],
         defaultTheme.getTheme = function(noteModel) {
             var isSlogan = noteModel.get('content').length < 50,
                 isSlabText = Math.random() > 0.3,
+                boxShadowWidth = 100 + (Math.round(Math.random * 100)),
                 // fonts = ['"futura-pt"','"ff-meta-serif-web-pro"','Helvetica','"proxima-nova-soft"','"din-condensed-web"','"adobe-caslon-pro"'],
                 backgroundImages = ['light_noise_diagonal','cubes','old_mathematics','old_mathematics_invert','graphy','squares','gridme','paper'],
                 theme = {
@@ -24,7 +25,7 @@ define([],
                     marginTop           : 0,
                     lineHeight          : Math.round(120 + (Math.random() * 40)) / 100,
                     align               : Math.round(Math.random() * 8),
-                    boxShadow           : Math.random() < 0.6 ? '' : 'inset 0 0 100px rgba(0,0,0,0.2)',
+                    boxShadow           : Math.random() < 0.6 ? '' : 'inset 0 0 '+boxShadowWidth+'px rgba(0,0,0,0.2)',
 
                     // border width up to 5, > 5 = no border
                     border              : Math.random() > 0.8 ? Math.round(Math.random() * 20) + 'px solid' + (Math.random() > 0.5 ? ' white' : '') : ''
@@ -97,12 +98,13 @@ define([],
         defaultTheme.hslColors = function(theme) {
             var colors      = {},
                 hue         = this.getRandomHue(),
-                isBgDark    = Math.random() < 0.5,
+                // try to avoid pale pink bg...
+                isBgDark    = Math.random() < (hue < 30 ? 0.8 : 0.5),
                 isBgLight   = !isBgDark,
-                isBgExtreme = Math.random() < (hue < 40 ? 0.6 : 0.4),
-                isWhiteShadow = Math.random() < 0.1,
-                isOutline   = !isWhiteShadow && Math.random() < 0.1,
-                isInlaid    = !isWhiteShadow && !isOutline && Math.random() < 0.1,
+                isBgExtreme = Math.random() < (hue < 40 ? 0.4 : 0.2),
+                isWhiteShadow = Math.random() < 0.2,
+                isOutline   = !isWhiteShadow && Math.random() < 0.2,
+                isInlaid    = !isWhiteShadow && !isOutline && Math.random() < 0.4,
                 isComplementary = Math.random() < 0.4,
                 isHSameAsFG = Math.random() < 0.3,
                 // hue         = Math.round(Math.random() * 360),
@@ -112,8 +114,8 @@ define([],
                 fgData,
                 hData,
                 fgColor;
- 
-            bgData      = [hue, Math.random() > (isBgDark ? 0.4 : 0.7) ? (isBgExtreme ? 50 : 80) : 20];
+
+            bgData      = [hue, Math.random() < (isBgDark ? 0.8 : 0.3) ? (isBgExtreme ? 50 : 80) : 20];
             fgData      = [hue, bgData[1] == 20 ? 80 : 20];
             hData       = [hue, bgData[1] == 20 ? 80 : 20];
 
@@ -124,7 +126,7 @@ define([],
             }
 
             if (Math.random() < 0.5) {
-                fgData.push(bgData[2] >= 50 ? 20 : 80);
+                fgData.push(bgData[2] >= 50 ? 20 : 60);
             } else {
                 fgData.push(isBgDark ? 90 : 10);
             }
@@ -132,23 +134,23 @@ define([],
             if (isComplementary) {
                 hData[0] = fgData[0] = this.getComplementaryHue(hData[0]);
                 hData[1] = 80;
-                hData[2] = 40;
+                hData[2] = bgData[2] > 50 ? 30 : 50;
             } else  {
-                hData.push(bgData[2] <= 20 || (bgData[1] >= 30 && bgData[2] <= 60) ? 90 : 30);
+                hData.push(bgData[2] <= 30 || (bgData[1] >= 30 && bgData[2] <= 60) ? 90 : 30);
                 // hData[1] = 60;
             }
 
             if (hData[2] == 90) {
                 colors.h1__textShadow = '';
             } else if (isWhiteShadow) {
-                colors.h1__textShadow = 'white 3px 3px 0';
+                colors.h1__textShadow = 'white 0.05em 0.05em 0';
             } else if (isOutline) {
-                colors.h1__textShadow = 'white 3px 3px 0, white -3px -3px 0';
+                colors.h1__textShadow = 'white 0.05em 0.05em 0, white -0.05em -0.05em 0';
                 if (Math.random() > 0.3) {
-                    colors.h1__textShadow += ', white 3px 0 0, white -3px 0 0, white 0 3px 0, white 0 -3px 0';
+                    colors.h1__textShadow += ', white 0.05em 0 0, white -0.05em 0 0, white 0 0.05em 0, white 0 -0.05em 0';
                 }
             } else if (isInlaid) {
-                colors.h1__textShadow = 'white 0 1px 0';
+                colors.h1__textShadow = 'rgba(255, 255, 255, 0.5) 0 1px 0';
             }
 
             colors.backgroundColor = this.arrayToHSL(bgData);
@@ -162,11 +164,18 @@ define([],
 
         defaultTheme.getRandomHue = function() {
             var hslTotal = this.hslRange[1]-this.hslRange[0],
-                rand = this.rander(Math.random()*hslTotal, 4),
+                rand = this.rander(Math.random()*hslTotal, 2),
+                rangeified;
 
-                // push up towards yellow/orange
-                yellowAdded = (rand + 80) % hslTotal;
-            return yellowAdded + this.hslRange[0];
+            // push up towards yellow/orange
+            rand = (rand + 40) % hslTotal;
+            rangeified = rand + this.hslRange[0];
+
+            // skip some of that goddam green
+            if (rangeified > 60 && rangeified < 140 && Math.random() < 0.8) {
+                rangeified = this.getRandomHue();
+            }
+            return rangeified;
         };
 
         defaultTheme.getComplementaryHue = function(hue) {
