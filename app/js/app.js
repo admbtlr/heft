@@ -24,6 +24,8 @@ define(['collections/notes', 'models/notebook', 'views/app', 'views/notebook', '
 
         var App = function() {
 
+            var context = this;
+
             _.extend(this, Backbone.Events);
 
             this.views.app = new AppView({'app': this});
@@ -55,6 +57,17 @@ define(['collections/notes', 'models/notebook', 'views/app', 'views/notebook', '
 
             // this.collections.lists = new TaskLists();
             // this.views.listMenu = new ListMenuView({ collection: this.collections.lists });
+
+            document.body.addEventListener("touchstart", function(e) {
+                var $currentNote = context.views.notebook.getCurrentPageView().$rectoEl.children('.note');
+                if ($currentNote.scrollTop() === 0) {
+                    $currentNote[0].scrollTop = 1;
+                }
+            }, false);
+
+            document.body.addEventListener("touchend", function(e) {
+                this.touchY = undefined;
+            }, false);
 
             var elem = $('.main')[0];
             elem.addEventListener('touchstart', function(event){
