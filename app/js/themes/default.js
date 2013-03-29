@@ -4,7 +4,7 @@ define([],
 
         var defaultTheme = {};
 
-        defaultTheme.hslRange = [-30, 200];
+        defaultTheme.hslRange = [-30, 240];
 
         // a theme is an object full of css definitions
         defaultTheme.getTheme = function(noteModel) {
@@ -164,11 +164,11 @@ define([],
 
         defaultTheme.getRandomHue = function() {
             var hslTotal = this.hslRange[1]-this.hslRange[0],
-                rand = this.rander(Math.random()*hslTotal, 2),
+                rand = this.rander(Math.random()*hslTotal, 1),
                 rangeified;
 
             // push up towards yellow/orange
-            rand = (rand + 40) % hslTotal;
+            rand = (rand + 70) % hslTotal;
             rangeified = rand + this.hslRange[0];
 
             // skip some of that goddam green

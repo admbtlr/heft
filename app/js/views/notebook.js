@@ -102,6 +102,32 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 return this;
             },
 
+            renderMultiPage : function(num) {
+                var height = $('.book').height(),
+                    width = $('.book').width(),
+                    lastPage = this.createPage(this.model.getLastNote()),
+                    page,
+                    pages = [lastPage],
+                    numPages = num || 4,
+                    factor = Math.sqrt(numPages),
+                    cssMap = {
+                        'height': (height / factor) + 'px',
+                        'width': (width / factor) + 'px',
+                        '-webkit-transform': 'scale(' + (1 / factor) + ')'
+                    };
+
+                for (var i = 1; i < numPages; i++) {
+                    page = this.getPrevPage(pages[i-1]);
+                    pages.push(page);
+                }
+                pages.reverse();
+                for (i = 0; i < pages.length; i++) {
+                    pages[i].$el.appendTo(this.$el.children('.multipage'));
+                }
+                $('.book').hide();
+                $('.multipage .page').css(cssMap);
+            },
+
             getCurrentNoteView  : function() {
                 return this.currentPage.noteRecto;
             },
@@ -423,7 +449,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     this.isDragging = false;
                 } else {
                     if (distance < minDistance) {
-                        this.handleClickEvent();
+                        this.handleClickEvent(e);
                         Backbone.Mediator.pub('notebook:mouseup');
                     }
                 }

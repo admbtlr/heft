@@ -423,26 +423,56 @@ html, body {
   height: 100%;
   min-height: 100%;
   background-image: url(/img/splash-4.png);
-  background-size: 320px 460px; }
+  background-size: 320px 460px;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch; }
 
-/* line 143, ../sass/screen.scss */
+/* line 144, ../sass/screen.scss */
+#pull-up {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 80px;
+  width: 100%;
+  background-color: black;
+  z-index: -1;
+  text-align: center;
+  color: white;
+  font-size: 2em;
+  padding: 20px;
+  -webkit-user-select: none;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  user-select: none; }
+  /* line 163, ../sass/screen.scss */
+  #pull-up .page {
+    left: 0; }
+  /* line 167, ../sass/screen.scss */
+  #pull-up .side {
+    left: 0; }
+  /* line 171, ../sass/screen.scss */
+  #pull-up .note {
+    -webkit-overflow-scrolling: none;
+    overflow-y: hidden; }
+
+/* line 177, ../sass/screen.scss */
 .cf {
   display: table;
   clear: both; }
 
-/* line 148, ../sass/screen.scss */
+/* line 182, ../sass/screen.scss */
 .note-edit {
   position: absolute;
   top: 0;
   width: 100%;
   height: 100%; }
 
-/* line 155, ../sass/screen.scss */
+/* line 189, ../sass/screen.scss */
 #note-edit-form {
   width: 100%;
   height: 100%; }
 
-/* line 159, ../sass/screen.scss */
+/* line 193, ../sass/screen.scss */
 #note-edit-form textarea {
   -webkit-user-select: text;
   -moz-user-select: -moz-text;
@@ -456,11 +486,11 @@ html, body {
   border: 0px;
   font: 18px/26px "SourceCodePro"; }
 
-/* line 172, ../sass/screen.scss */
+/* line 206, ../sass/screen.scss */
 #note-edit-form textarea:focus {
   outline: 0; }
 
-/* line 176, ../sass/screen.scss */
+/* line 210, ../sass/screen.scss */
 .note {
   box-sizing: border-box;
   width: 320px;
@@ -474,108 +504,104 @@ html, body {
   -o-backface-visibility: hidden;
   backface-visibility: hidden; }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 176, ../sass/screen.scss */
+    /* line 210, ../sass/screen.scss */
     .note {
       width: 320px;
       height: 460px; } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 176, ../sass/screen.scss */
+    /* line 210, ../sass/screen.scss */
     .note {
       width: 320px;
       height: 548px; } }
-  /* line 195, ../sass/screen.scss */
+  /* line 229, ../sass/screen.scss */
   .note p {
     -webkit-hyphens: auto; }
   @media screen and (device-aspect-ratio: 2 / 3), screen and (device-aspect-ratio: 40 / 71), screen and (device-aspect-ratio: 3 / 4) {
-    /* line 176, ../sass/screen.scss */
+    /* line 210, ../sass/screen.scss */
     .note {
       -webkit-overflow-scrolling: touch;
       -webkit-transform: translateZ(0px); } }
 
-/* line 206, ../sass/screen.scss */
+/* line 240, ../sass/screen.scss */
 .offscreen {
   -webkit-transform: translateX(-320px); }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 206, ../sass/screen.scss */
+    /* line 240, ../sass/screen.scss */
     .offscreen {
       -webkit-transform: translateX(-320px); } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 206, ../sass/screen.scss */
+    /* line 240, ../sass/screen.scss */
     .offscreen {
       -webkit-transform: translateX(-320px); } }
 
-/* line 216, ../sass/screen.scss */
+/* line 250, ../sass/screen.scss */
 .note p {
   padding: 0;
   margin: 0; }
 
-/* line 221, ../sass/screen.scss */
+/* line 255, ../sass/screen.scss */
 .note h1:first-of-type {
   margin-top: 0px; }
 
-/* line 225, ../sass/screen.scss */
+/* line 259, ../sass/screen.scss */
 .first-line-bold p:first-child:first-line {
   font-weight: bold; }
 
-/* line 229, ../sass/screen.scss */
+/* line 263, ../sass/screen.scss */
 .first-line-larger p:first-child:first-line {
   font-size: 180%; }
 
-/* line 236, ../sass/screen.scss */
+/* line 270, ../sass/screen.scss */
 #book-holder {
-  -webkit-perspective: 2000;
-  -moz-perspective: 2000;
-  -ms-perspective: 2000;
-  -o-perspective: 2000;
-  perspective: 2000; }
+  padding-bottom: 1px; }
 
-/* line 240, ../sass/screen.scss */
+/* line 275, ../sass/screen.scss */
 .book {
   position: relative;
-  width: 640px;
+  width: 320px;
   height: 460px;
   overflow: hidden; }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 240, ../sass/screen.scss */
+    /* line 275, ../sass/screen.scss */
     .book {
-      width: 640px;
+      width: 320px;
       height: 460px; } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 240, ../sass/screen.scss */
+    /* line 275, ../sass/screen.scss */
     .book {
-      width: 640px;
+      width: 320px;
       height: 548px; } }
-  @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 240, ../sass/screen.scss */
-    .book {
-      left: -320px; } }
-  @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 240, ../sass/screen.scss */
-    .book {
-      left: -320px; } }
-  @media screen and (orientation: landscape) {
-    /* line 240, ../sass/screen.scss */
-    .book {
-      -webkit-transform: scale(1.5);
-      margin-top: 115px; } }
 
-/* line 265, ../sass/screen.scss */
+/* line 300, ../sass/screen.scss */
 .page {
   -webkit-transition: -webkit-transform 0.2s ease-out;
   -moz-transition: -moz-transform 0.2s ease-out;
   -o-transition: -o-transform 0.2s ease-out;
   transition: transform 0.2s ease-out;
+  position: absolute;
+  top: 0px;
+  width: 320px;
+  height: 460px;
   -webkit-user-select: none;
   -moz-user-select: -moz-none;
   -ms-user-select: none;
   user-select: none; }
+  @media screen and (device-aspect-ratio: 2 / 3) {
+    /* line 300, ../sass/screen.scss */
+    .page {
+      width: 320px;
+      height: 460px; } }
+  @media screen and (device-aspect-ratio: 40 / 71) {
+    /* line 300, ../sass/screen.scss */
+    .page {
+      width: 320px;
+      height: 548px; } }
 
-/* line 277, ../sass/screen.scss */
+/* line 325, ../sass/screen.scss */
 .side {
   box-sizing: border-box;
   position: absolute;
   top: 0px;
-  left: 320px;
   width: 320px;
   height: 460px;
   -webkit-backface-visibility: hidden;
@@ -584,17 +610,43 @@ html, body {
   -o-backface-visibility: hidden;
   backface-visibility: hidden; }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 277, ../sass/screen.scss */
+    /* line 325, ../sass/screen.scss */
     .side {
       width: 320px;
       height: 460px; } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 277, ../sass/screen.scss */
+    /* line 325, ../sass/screen.scss */
     .side {
       width: 320px;
       height: 548px; } }
 
-/* line 296, ../sass/screen.scss */
+/* line 343, ../sass/screen.scss */
+.multipage {
+  position: absolute;
+  width: 320px;
+  height: 460px;
+  top: 0px;
+  left: 0px; }
+  @media screen and (device-aspect-ratio: 2 / 3) {
+    /* line 343, ../sass/screen.scss */
+    .multipage {
+      width: 320px;
+      height: 460px; } }
+  @media screen and (device-aspect-ratio: 40 / 71) {
+    /* line 343, ../sass/screen.scss */
+    .multipage {
+      width: 320px;
+      height: 548px; } }
+  /* line 357, ../sass/screen.scss */
+  .multipage .page {
+    -webkit-transform-origin: 0 0 0;
+    float: left;
+    position: static; }
+  /* line 365, ../sass/screen.scss */
+  .multipage .note {
+    overflow-y: hidden; }
+
+/* line 370, ../sass/screen.scss */
 .verso {
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
@@ -603,11 +655,11 @@ html, body {
   transform: rotateY(180deg);
   background-color: #ffe; }
 
-/* line 301, ../sass/screen.scss */
+/* line 375, ../sass/screen.scss */
 .recto {
   background-color: #ffe; }
 
-/* line 305, ../sass/screen.scss */
+/* line 379, ../sass/screen.scss */
 .flipped {
   -webkit-transform: rotateY(-180deg);
   -moz-transform: rotateY(-180deg);
@@ -615,17 +667,17 @@ html, body {
   -o-transform: rotateY(-180deg);
   transform: rotateY(-180deg); }
 
-/* line 309, ../sass/screen.scss */
+/* line 383, ../sass/screen.scss */
 #page-store {
   display: none; }
 
-/* line 313, ../sass/screen.scss */
+/* line 387, ../sass/screen.scss */
 .slabtexted .slabtext {
   display: -moz-inline-box;
   display: inline-block;
   white-space: nowrap; }
 
-/* line 318, ../sass/screen.scss */
+/* line 392, ../sass/screen.scss */
 .slabtextinactive .slabtext {
   display: inline;
   white-space: normal;
@@ -635,6 +687,6 @@ html, body {
   *letter-spacing: 0 !important;
   *word-spacing: 0 !important; }
 
-/* line 327, ../sass/screen.scss */
+/* line 401, ../sass/screen.scss */
 .slabtextdone .slabtext {
   display: block; }

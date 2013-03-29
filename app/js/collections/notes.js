@@ -11,7 +11,7 @@ define(['models/note', 'localstorage'],
             initialize  : function() {
                 this.fetch();
                 this.bind('change', this.save);
-            }
+            // },
 
             // setStore    : function(store) {
             //     this.store = store;
@@ -22,7 +22,7 @@ define(['models/note', 'localstorage'],
             //     var note = new Note(n);
             //     note.set('id', note.get('key'));
             //     this.add(note);
-            // }
+            }
         });
 
         return Notes;

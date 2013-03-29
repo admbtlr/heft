@@ -84,12 +84,12 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     classesToAdd = [],
                     classesToRemove = [],
                     slabText = false,
-                    deviceMultiplier = 0.666;
+                    deviceMultiplier = 0.666; // TODO
 
                 // no style? deal with it!
                 if (!style) {
                     this.model.setRandomStyle();
-                    style = this.model.get('style');
+                    return;
                 }
 
                 // clear all existing css
@@ -131,6 +131,40 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                         $page.find(selector).css(context.styleHyphenFormat(pieces[1]), value);
                     } else if (key == 'slabText') {
                         slabText = style[key];
+                    } else if (key == 'slabStyle') {
+                        // a 2d array of definition object, for breaking headings into spans with custom style:
+                        // first h1 - [{numletters:...,trim:(true|false),css: {rule:value,rule:value}}, {numletters:...,trim:(true|false),css: {rule:value,rule:value}}, ... ]
+                        // second h1 - [{numletters:...,trim:(true|false),css: {rule:value,rule:value}}, {numletters:...,trim:(true|false),css: {rule:value,rule:value}}, ... ]
+                        // ... etc
+                        $page.find('h1').each(function(index, item) {
+                            var $heading = $(item),
+                                text = $heading.html(),
+                                defs = style.slabStyle[index],
+                                def,
+                                total = 0,
+                                $slabbedText,
+                                $span,
+                                sliced;
+
+                            for (var i = 0; i < defs.length; i++) {
+                                def = defs[i];
+                                if (def.trim) {
+                                    text = text.trim();
+                                }
+                                sliced = text.slice(0, total + def.numLetters);
+                                text = text.slice(total + def.numLetters);
+                                $span = $('<span></span').html(sliced);
+                                _.each(def.css, function(val, key) {
+                                    $span.css(context.styleHyphenFormat(key), val);
+                                });
+                                if ($slabbedText) {
+                                    $slabbedText = $slabbedText.add($span);
+                                } else {
+                                    $slabbedText = $span;
+                                }
+                            }
+                            $heading.html('').append($slabbedText);
+                        });
                     } else {
                         styleMap[key] = value;
                         // $page.css(context.styleHyphenFormat(key), style[key]);
@@ -145,38 +179,79 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     this.fitToPage();
                 }
 
-                if (slabText) {
-                    _.delay(function() {
-                        $page.find('h1').slabText();
-                    }, 700);
-                }
-
                 _.delay(function() {
-                    var contentHeight,
-                        pageHeight = $page.height(),
-                        paddingTop = Number($page.css('padding-top').slice(0, -2)),
-                        style = context.model.get('style');
-                    contentHeight = context.outerHeight($page);
-                    if (contentHeight + paddingTop < pageHeight  && context.model.get('stylable')) {
-                        if (contentHeight > pageHeight || Math.random() > 0.5) {
-                            paddingTop = $page.css('padding-left');
-                        } else if (Math.random() > 0.5) {
-                            paddingTop = Math.round((pageHeight - contentHeight) / 2);
-                        } else {
-                            paddingTop = pageHeight - contentHeight;
-                        }
-                        $page.css('padding-top', paddingTop+'px');
-                        style.paddingTop = (paddingTop / deviceMultiplier) + 'px';
-                        context.model.set('style', style);
+                    var changed = false;
+                    if (slabText) {
+                        style = context.doSlabText(style);
+                        changed = true;
+                    }
+                    if (typeof style.paddingTop == 'undefined') {
+                        style = context.verticalPadding(style);
+                        changed = true;
+                    }
+                    if (changed) {
+                        context.model.set({'style': style}, {'silent': true});
                         context.model.save();
                     }
-                }, 800);
-
-                // if ($page.height() > 0 && slabText) {
-                //     $page.find('h1').slabText();
-                // }
+                }, 700);
 
             },
+
+            doSlabText   : function(style) {
+                var length,
+                    wordSpacing,
+                    fontSize,
+                    $item,
+                    slabStyle = [],
+                    headingArray,
+                    $page = this.$el.find('.note');
+                $page.find('h1').slabText();
+                // serialize the slabtexting & store in the style object
+                $page.find('h1').each(function(index, item) {
+                    headingArray = [];
+                    $(item).children().each(function(index, item) {
+                        $item = $(item);
+                        def = {
+                            'numLetters': $item.html().length,
+                            'trim': true,
+                            'css': {
+                                'wordSpacing'   : $item.css('word-spacing'),
+                                'letterSpacing' : $item.css('letter-spacing'),
+                                'fontSize'      : $item.css('font-size'),
+                                'whiteSpace'    : 'nowrap',
+                                'display'       : 'block'
+                            }
+                        };
+                        headingArray.push(def);
+                    });
+                    slabStyle.push(headingArray);
+                });
+                style.slabStyle = slabStyle;
+                delete style.slabText;
+                return style;
+            },
+
+            verticalPadding : function(style) {
+                var contentHeight,
+                    $page = this.$el.find('.note'),
+                    pageHeight = $page.height(),
+                    paddingTop = Number($page.css('padding-top').slice(0, -2)),
+                    deviceMultiplier = 0.666; // TODO
+                contentHeight = this.outerHeight($page);
+                if (contentHeight + paddingTop < pageHeight  && this.model.get('stylable')) {
+                    if (contentHeight > pageHeight || Math.random() > 0.5) {
+                        paddingTop = $page.css('padding-left');
+                    } else if (Math.random() > 0.5) {
+                        paddingTop = Math.round((pageHeight - contentHeight) / 2);
+                    } else {
+                        paddingTop = pageHeight - contentHeight;
+                    }
+                    $page.css('padding-top', paddingTop+'px');
+                    style.paddingTop = (paddingTop / deviceMultiplier) + 'px';
+                }
+                return style;
+            },
+
 
             applyMultiplier     : function(declaration, multiplier) {
                 var pieces = declaration.split(' '),
@@ -262,8 +337,9 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
 
             fitToPage   : function() {
                 var $page = this.$el.find('.note'),
-                    h1FontSizeNum = Number(this.model.get('style').h1__fontSize.slice(0, -2)),
-                    paddingNum = Number(this.model.get('style').padding.slice(0, -2)),
+                    style = this.model.get('style'),
+                    h1FontSizeNum = Number(style.h1__fontSize.slice(0, -2)),
+                    paddingNum = Number(style.padding.slice(0, -2)),
                     width = this.outerWidth($page);
                 while (width > $page.width() && h1FontSizeNum > 1.6) {
                     h1FontSizeNum = h1FontSizeNum < 1.6 ? h1FontSizeNum : parseFloat(h1FontSizeNum * 0.95).toFixed(1);
@@ -275,11 +351,11 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 // var remainder = $page.height() - height,
                 //     paddingTop = remainder > 0 ? [paddingNum, remainder / 2.0, remainder-paddingNum][Math.round(Math.random() * 2)] : Math.round(Math.random() * 30);
                 // $($page.children()[0]).css('margin-top', marginTop);
-                // this.model.get('style').p_marginTop = marginTop;
-                this.model.get('style').padding = paddingNum + 'px';
-                this.model.get('style').h1__fontSize = h1FontSizeNum+'em';
+                // style.p_marginTop = marginTop;
+                style.padding = paddingNum + 'px';
+                style.h1__fontSize = h1FontSizeNum+'em';
                 this.model.set('pageFitted', true);
-                this.renderStyle();
+                this.model.set('style', style);
             },
 
             outerHeight : function($el) {

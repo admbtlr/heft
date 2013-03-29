@@ -7,7 +7,7 @@ define(['models/note', 'text!templates/install.md', 'text!templates/welcome.md',
             initialize  : function(notes) {
                 var n, n2;
                 this.notes = notes;
-                if (!window.navigator.standalone) {
+                if (window.navigator.platform == 'iPhone' && !window.navigator.standalone) {
                     notes.reset();
                     n = new Note({
                         content: installText,
@@ -57,6 +57,11 @@ define(['models/note', 'text!templates/install.md', 'text!templates/welcome.md',
                 } else {
                     return this.notes.at(this.notes.indexOf(note) - 1);
                 }
+            },
+
+            getLastNote : function() {
+                // final page is blank, hence the "-2"
+                return this.notes.at(this.notes.length - 2);
             },
 
             isLastNote      : function(n) {
