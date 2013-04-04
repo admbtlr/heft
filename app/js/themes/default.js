@@ -4,20 +4,19 @@ define([],
 
         var defaultTheme = {};
 
-        defaultTheme.hslRange = [-30, 280];
+        defaultTheme.hslRange = [-30, 200];
 
         // a theme is an object full of css definitions
         defaultTheme.getTheme = function(noteModel) {
             var isSlogan = noteModel.get('content').length < 50,
                 isSlabText = Math.random() > 0.3,
-                boxShadowWidth = 100 + (Math.round(Math.random * 100)),
                 // fonts = ['"futura-pt"','"ff-meta-serif-web-pro"','Helvetica','"proxima-nova-soft"','"din-condensed-web"','"adobe-caslon-pro"'],
                 backgroundImages = ['light_noise_diagonal','cubes','old_mathematics','old_mathematics_invert','graphy','squares','gridme','paper'],
                 theme = {
                     fontSize            : (20 + (Math.round(Math.random() * 10))) + 'px',
                     h1__textTransform   : Math.random() > 0.7 ? 'uppercase' : 'none',
                     h1__fontWeight      : 'normal',
-                    h1__fontSize        : isSlabText ? '1.2em' : (Math.round(Math.random() * 30 + 20) / 10) + 'em',
+                    h1__fontSize        : isSlabText ? '1.2em' : this.getH1Size(noteModel),
                     h1__lineHeight      : 0.7 + (Math.round(Math.random() * 4) / 10),
                     slabText            : isSlabText,
                     h1__WebkitHyphens   : !isSlabText && Math.random() > 0.5 ? 'auto' : 'none',
@@ -25,7 +24,7 @@ define([],
                     marginTop           : 0,
                     lineHeight          : Math.round(120 + (Math.random() * 40)) / 100,
                     align               : Math.round(Math.random() * 8),
-                    boxShadow           : Math.random() < 0.6 ? '' : 'inset 0 0 '+boxShadowWidth+'px rgba(0,0,0,0.2)',
+                    boxShadow           : Math.random() < 0.6 ? '' : 'inset 0 0 100px rgba(0,0,0,0.2)',
 
                     // border width up to 5, > 5 = no border
                     border              : Math.random() > 0.8 ? Math.round(Math.random() * 20) + 'px solid' + (Math.random() > 0.5 ? ' white' : '') : ''
@@ -98,13 +97,12 @@ define([],
         defaultTheme.hslColors = function(theme) {
             var colors      = {},
                 hue         = this.getRandomHue(),
-                // try to avoid pale pink bg...
-                isBgDark    = Math.random() < (hue < 30 ? 0.8 : 0.5),
+                isBgDark    = Math.random() < 0.3,
                 isBgLight   = !isBgDark,
-                isBgExtreme = Math.random() < (hue < 40 ? 0.6 : 0.4),
-                isWhiteShadow = Math.random() < 0.2,
-                isOutline   = !isWhiteShadow && Math.random() < 0.2,
-                isInlaid    = !isWhiteShadow && !isOutline && Math.random() < 0.4,
+                isBgExtreme = Math.random() < (hue < 40 ? 0.8 : 0.6),
+                isWhiteShadow = Math.random() < 0.1,
+                isOutline   = !isWhiteShadow && Math.random() < 0.1,
+                isInlaid    = !isWhiteShadow && !isOutline && Math.random() < 0.1,
                 isComplementary = Math.random() < 0.4,
                 isHSameAsFG = Math.random() < 0.3,
                 // hue         = Math.round(Math.random() * 360),
@@ -115,7 +113,7 @@ define([],
                 hData,
                 fgColor;
 
-            bgData      = [hue, Math.random() < (isBgDark ? 0.7 : 0.3) ? (isBgExtreme ? 50 : 80) : 20];
+            bgData      = [hue, Math.random() > (isBgDark ? 0.4 : 0.7) ? (isBgExtreme ? 50 : 80) : 20];
             fgData      = [hue, bgData[1] == 20 ? 80 : 20];
             hData       = [hue, bgData[1] == 20 ? 80 : 20];
 
@@ -126,7 +124,7 @@ define([],
             }
 
             if (Math.random() < 0.5) {
-                fgData.push(bgData[2] >= 50 ? 20 : 60);
+                fgData.push(bgData[2] >= 50 ? 20 : 80);
             } else {
                 fgData.push(isBgDark ? 90 : 10);
             }
@@ -134,23 +132,23 @@ define([],
             if (isComplementary) {
                 hData[0] = fgData[0] = this.getComplementaryHue(hData[0]);
                 hData[1] = 80;
-                hData[2] = bgData[2] > 50 ? 30 : 50;
+                hData[2] = 40;
             } else  {
-                hData.push(bgData[2] <= 30 || (bgData[1] >= 30 && bgData[2] <= 60) ? 90 : 30);
+                hData.push(bgData[2] <= 20 || (bgData[1] >= 30 && bgData[2] <= 60) ? 90 : 30);
                 // hData[1] = 60;
             }
 
             if (hData[2] == 90) {
                 colors.h1__textShadow = '';
             } else if (isWhiteShadow) {
-                colors.h1__textShadow = 'white 0.05em 0.05em 0';
+                colors.h1__textShadow = 'white 3px 3px 0';
             } else if (isOutline) {
-                colors.h1__textShadow = 'white 0.05em 0.05em 0, white -0.05em -0.05em 0';
+                colors.h1__textShadow = 'white 3px 3px 0, white -3px -3px 0';
                 if (Math.random() > 0.3) {
-                    colors.h1__textShadow += ', white 0.05em 0 0, white -0.05em 0 0, white 0 0.05em 0, white 0 -0.05em 0';
+                    colors.h1__textShadow += ', white 3px 0 0, white -3px 0 0, white 0 3px 0, white 0 -3px 0';
                 }
             } else if (isInlaid) {
-                colors.h1__textShadow = 'rgba(255, 255, 255, 0.5) 0 1px 0';
+                colors.h1__textShadow = 'white 0 1px 0';
             }
 
             colors.backgroundColor = this.arrayToHSL(bgData);
@@ -162,21 +160,24 @@ define([],
             return colors;
         };
 
+        defaultTheme.getH1Size = function(noteModel) {
+            var headingLength = noteModel.get('content').split('\n', 1)[0].length,
+                multiplier = 30,
+                base = 20;
+            if (headingLength > 50) {
+                multiplier = 20;
+                base = 15;
+            }
+            return (Math.round(Math.random() * multiplier + base) / 10) + 'em';
+        };
+
         defaultTheme.getRandomHue = function() {
             var hslTotal = this.hslRange[1]-this.hslRange[0],
-                // rand = this.rander(Math.random()*hslTotal, 1),
-                rand = Math.random()*hslTotal,
-                rangeified;
+                rand = this.rander(Math.random()*hslTotal, 4),
 
-            // push up towards yellow/orange
-            // rand = (rand + 70) % hslTotal;
-            rangeified = rand + this.hslRange[0];
-
-            // skip some of that goddam green
-            if (rangeified > 60 && rangeified < 160 && Math.random() < 0.8) {
-                rangeified = this.getRandomHue();
-            }
-            return rangeified;
+                // push up towards yellow/orange
+                yellowAdded = (rand + 80) % hslTotal;
+            return yellowAdded + this.hslRange[0];
         };
 
         defaultTheme.getComplementaryHue = function(hue) {
