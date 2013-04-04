@@ -1,1 +1,0 @@
-define(["models/notebook"],function(e){var t=Backbone.Collection.extend({model:e});return t});

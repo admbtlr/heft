@@ -4,7 +4,7 @@ define([],
 
         var defaultTheme = {};
 
-        defaultTheme.hslRange = [-30, 240];
+        defaultTheme.hslRange = [-30, 280];
 
         // a theme is an object full of css definitions
         defaultTheme.getTheme = function(noteModel) {
@@ -101,7 +101,7 @@ define([],
                 // try to avoid pale pink bg...
                 isBgDark    = Math.random() < (hue < 30 ? 0.8 : 0.5),
                 isBgLight   = !isBgDark,
-                isBgExtreme = Math.random() < (hue < 40 ? 0.4 : 0.2),
+                isBgExtreme = Math.random() < (hue < 40 ? 0.6 : 0.4),
                 isWhiteShadow = Math.random() < 0.2,
                 isOutline   = !isWhiteShadow && Math.random() < 0.2,
                 isInlaid    = !isWhiteShadow && !isOutline && Math.random() < 0.4,
@@ -115,7 +115,7 @@ define([],
                 hData,
                 fgColor;
 
-            bgData      = [hue, Math.random() < (isBgDark ? 0.8 : 0.3) ? (isBgExtreme ? 50 : 80) : 20];
+            bgData      = [hue, Math.random() < (isBgDark ? 0.7 : 0.3) ? (isBgExtreme ? 50 : 80) : 20];
             fgData      = [hue, bgData[1] == 20 ? 80 : 20];
             hData       = [hue, bgData[1] == 20 ? 80 : 20];
 
@@ -164,15 +164,16 @@ define([],
 
         defaultTheme.getRandomHue = function() {
             var hslTotal = this.hslRange[1]-this.hslRange[0],
-                rand = this.rander(Math.random()*hslTotal, 1),
+                // rand = this.rander(Math.random()*hslTotal, 1),
+                rand = Math.random()*hslTotal,
                 rangeified;
 
             // push up towards yellow/orange
-            rand = (rand + 70) % hslTotal;
+            // rand = (rand + 70) % hslTotal;
             rangeified = rand + this.hslRange[0];
 
             // skip some of that goddam green
-            if (rangeified > 60 && rangeified < 140 && Math.random() < 0.8) {
+            if (rangeified > 60 && rangeified < 160 && Math.random() < 0.8) {
                 rangeified = this.getRandomHue();
             }
             return rangeified;

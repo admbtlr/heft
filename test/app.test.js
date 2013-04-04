@@ -35,8 +35,9 @@ describe('App', function() {
             // mock an event object with requisite content
             e = { data: { context: heft } };
         currentNote.get('style').should.equal(oldStyle);
-        heft.setRandomStyleAndReplace(e);
-        heft.selectedNote.get('style').should.not.equal(oldStyle);
+        currentNote.set('stylable', true);
+        Backbone.Mediator.pub('note:randomisestyle');
+        currentNote.get('style').should.not.equal(oldStyle);
     });
 
     it('should call callback when editNote is triggered', function() {
@@ -46,11 +47,4 @@ describe('App', function() {
         callback.should.have.been.calledOnce;
     });
 
-    it('should select next and previous notes when events are triggered', function() {
-        var oldNote = heft.selectedNote;
-        heft.trigger('selectNextNote');
-        heft.selectedNote.should.not.equal(oldNote);
-        heft.trigger('selectPreviousNote');
-        heft.selectedNote.should.equal(oldNote);
-    });
 });

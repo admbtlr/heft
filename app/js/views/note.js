@@ -6,8 +6,8 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
         var converter = new Showdown.converter();
 
         var NoteView = Backbone.View.extend({
-            tagName     : "a",
-            className   : "tile",
+            // tagName     : "a",
+            className   : "note",
             template    : _.template(template),
             editTemplate: _.template(editTemplate),
             events      : {},
@@ -18,18 +18,19 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
             },
 
             render      : function() {
-                var html = this.template(this.toJSON());
+                var html;
                 if (this.model.get('content').length === 0) {
                     this.showEditView();
                 } else {
-                    if (this.$el.children('.note').length > 0) {
-                        this.$el.children('.note').replaceWith($(html));
-                    } else {
-                        this.$el.html(html);
-                    }
+                    html = this.renderContent();
+                    this.$el.html(html);
                     this.renderStyle();
                 }
                 return this;
+            },
+
+            renderContent   : function() {
+                return this.makeLinks(converter.makeHtml('#'+this.smarten(this.model.get('content'))));
             },
 
             hide    : function() {
@@ -77,8 +78,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
             },
 
             renderStyle     : function() {
-                var $page,
-                    html = this.template(this.toJSON()),
+                var content = this.renderContent(),
                     style = this.model.get('style'),
                     styleMap = {},
                     classesToAdd = [],
@@ -93,11 +93,10 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 }
 
                 // clear all existing css
-                this.$el.children('.note').replaceWith($(html));
-                $page = this.$el.find('.note');
+                this.$el.html(content);
 
                 // to get bg colors on the main h1, there might be (or need to be) a span inserted
-                this.addOrRemoveSpans($page, style);
+                this.addOrRemoveSpans(this.$el, style);
 
                 // variables in style object are either:
                 // - straight css values (padding: 10px)
@@ -128,7 +127,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                         // build selector
                         _.each(selectors, function(s) { selector += s+' '; });
                         // $page.find(selector).css(context.styleHyphenFormat(pieces[1]), (_.isArray(style[key]) ? context.arrayToRGB(style[key]) : style[key]));
-                        $page.find(selector).css(context.styleHyphenFormat(pieces[1]), value);
+                        context.$el.find(selector).css(context.styleHyphenFormat(pieces[1]), value);
                     } else if (key == 'slabText') {
                         slabText = style[key];
                     } else if (key == 'slabStyle') {
@@ -136,7 +135,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                         // first h1 - [{numletters:...,trim:(true|false),css: {rule:value,rule:value}}, {numletters:...,trim:(true|false),css: {rule:value,rule:value}}, ... ]
                         // second h1 - [{numletters:...,trim:(true|false),css: {rule:value,rule:value}}, {numletters:...,trim:(true|false),css: {rule:value,rule:value}}, ... ]
                         // ... etc
-                        $page.find('h1').each(function(index, item) {
+                        context.$el.find('h1').each(function(index, item) {
                             var $heading = $(item),
                                 text = $heading.html(),
                                 defs = style.slabStyle[index],
@@ -171,11 +170,11 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     }
                 });
 
-                $page.css(styleMap);
-                $page.addClass(_.reduce(classesToAdd, function(memo, klass) { return memo+klass+' '; }, ''));
-                $page.removeClass(_.reduce(classesToRemove, function(memo, klass) { return memo+klass+' '; }, ''));
+                this.$el.css(styleMap);
+                this.$el.addClass(_.reduce(classesToAdd, function(memo, klass) { return memo+klass+' '; }, ''));
+                this.$el.removeClass(_.reduce(classesToRemove, function(memo, klass) { return memo+klass+' '; }, ''));
 
-                if ($page.height() > 0 && !this.model.get('pageFitted')) {
+                if (this.$el.height() > 0 && !this.model.get('pageFitted')) {
                     this.fitToPage();
                 }
 
@@ -203,11 +202,10 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     fontSize,
                     $item,
                     slabStyle = [],
-                    headingArray,
-                    $page = this.$el.find('.note');
-                $page.find('h1').slabText();
+                    headingArray;
+                this.$el.find('h1').slabText();
                 // serialize the slabtexting & store in the style object
-                $page.find('h1').each(function(index, item) {
+                this.$el.find('h1').each(function(index, item) {
                     headingArray = [];
                     $(item).children().each(function(index, item) {
                         $item = $(item);
@@ -233,20 +231,19 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
 
             verticalPadding : function(style) {
                 var contentHeight,
-                    $page = this.$el.find('.note'),
-                    pageHeight = $page.height(),
-                    paddingTop = Number($page.css('padding-top').slice(0, -2)),
+                    pageHeight = this.$el.height(),
+                    paddingTop = Number(this.$el.css('padding-top').slice(0, -2)),
                     deviceMultiplier = 0.666; // TODO
-                contentHeight = this.outerHeight($page);
+                contentHeight = this.outerHeight(this.$el);
                 if (contentHeight + paddingTop < pageHeight  && this.model.get('stylable')) {
                     if (contentHeight > pageHeight || Math.random() > 0.5) {
-                        paddingTop = $page.css('padding-left');
+                        paddingTop = this.$el.css('padding-left');
                     } else if (Math.random() > 0.5) {
                         paddingTop = Math.round((pageHeight - contentHeight) / 2);
                     } else {
                         paddingTop = pageHeight - contentHeight;
                     }
-                    $page.css('padding-top', paddingTop+'px');
+                    this.$el.css('padding-top', paddingTop+'px');
                     style.paddingTop = (paddingTop / deviceMultiplier) + 'px';
                 }
                 return style;
@@ -336,17 +333,16 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
             // },
 
             fitToPage   : function() {
-                var $page = this.$el.find('.note'),
-                    style = this.model.get('style'),
+                var style = this.model.get('style'),
                     h1FontSizeNum = Number(style.h1__fontSize.slice(0, -2)),
                     paddingNum = Number(style.padding.slice(0, -2)),
-                    width = this.outerWidth($page);
-                while (width > $page.width() && h1FontSizeNum > 1.6) {
+                    width = this.outerWidth(this.$el);
+                while (width > this.$el.width() && h1FontSizeNum > 1.6) {
                     h1FontSizeNum = h1FontSizeNum < 1.6 ? h1FontSizeNum : parseFloat(h1FontSizeNum * 0.95).toFixed(1);
                     paddingNum = paddingNum > 4 ? Math.round(paddingNum * 0.8) : paddingNum;
-                    $page.css('padding', paddingNum + 'px');
-                    $page.children('h1').css('font-size', h1FontSizeNum+'em');
-                    width = this.outerWidth($page);
+                    this.$el.css('padding', paddingNum + 'px');
+                    this.$el.children('h1').css('font-size', h1FontSizeNum+'em');
+                    width = this.outerWidth(this.$el);
                 }
                 // var remainder = $page.height() - height,
                 //     paddingTop = remainder > 0 ? [paddingNum, remainder / 2.0, remainder-paddingNum][Math.round(Math.random() * 2)] : Math.round(Math.random() * 30);

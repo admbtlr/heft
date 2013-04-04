@@ -1,1 +1,0 @@
-define(["models/note","localstorage"],function(e){var t=Backbone.Collection.extend({model:e,localStorage:new Backbone.LocalStorage("notes"),initialize:function(){this.fetch();this.bind("change",this.save)}});return t});

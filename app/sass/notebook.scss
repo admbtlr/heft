@@ -1,0 +1,63 @@
+// page turning stuff for the notebooks...
+
+#book-holder {
+    // necessary for the pull-up, weirdly enough
+    padding-bottom: 1px;
+}
+
+.book {
+    position: relative;
+    width: $pageWidth;
+    height: $pageHeight;
+    @include iphone4 {
+        width: $ip4PageWidth;
+        height: $ip4PageHeight;
+    }
+    @include iphone5 {
+        width: $ip5PageWidth;
+        height: $ip5PageHeight;
+    }
+    overflow: hidden; // for the button bars
+    // @include iphone4 {
+    //     left: -$ip4PageWidth;
+    // }
+    // @include iphone5 {
+    //     left: -$ip5PageWidth;
+    // }
+    @include landscape {
+        // -webkit-transform: scale(1.5);
+        // margin-top: 115px;
+    }
+}
+
+.multipage {
+    position: absolute;
+    width: $pageWidth;
+    height: $pageHeight;
+    @include iphone4 {
+        width: $ip4PageWidth;
+        height: $ip4PageHeight;
+    }
+    @include iphone5 {
+        width: $ip5PageWidth;
+        height: $ip5PageHeight;
+    }
+    top: 0px;
+    left: 0px;
+    .page {
+        -webkit-transform-origin: 0 0 0;
+        float: left;
+        // height: 230px;
+        // width: 160px;
+        position: static;
+        // -webkit-transform: scale(0.5);
+    }
+    .note {
+        overflow-y: hidden;
+    }
+}
+
+#page-store {
+    display: none;
+}
+

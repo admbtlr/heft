@@ -54,6 +54,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 Backbone.Mediator.sub('note:predestroy', function(nv) {
                     this.removePage.apply(this, [nv]);
                 }, this);
+
                 Backbone.Mediator.sub('note:randomisestyle', function() {
                     if (this.getCurrentNoteView().model.get('stylable')) {
                         var $noteEl = this.getCurrentNoteView().$el;
@@ -68,12 +69,22 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                         Backbone.Mediator.pub('note:styleupdated', this.currentPage);
                     }
                 }, this);
+
                 Backbone.Mediator.sub('notebook:mouselongclick', function() {
                     var nv = this.getCurrentNoteView();
                     if (nv) {
                         nv.showEditView.apply(nv, [true]);
                     }
                 }, this);
+
+                var context = this;
+
+                if ($.os && $.os.ios) {
+                    this.$el.pinchIn(function() {
+                        console.log('pinch me');
+                        context.renderMultiPage();
+                    });
+                }
             },
 
             render      : function() {
@@ -99,6 +110,17 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     prevPage.$el.remove().addClass('offscreen').insertAfter(this.currentPage.$el).show();
                 }
 
+                // make the multipage level swallow all touch events
+                $('.multipage').bind('touchstart', function(e) {
+                    e.stopPropagation();
+                })
+                .bind('touchmove', function(e) {
+                    e.stopPropagation();
+                })
+                .bind('touchend', function(e) {
+                    e.stopPropagation();
+                });
+
                 return this;
             },
 
@@ -106,9 +128,10 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 var height = $('.book').height(),
                     width = $('.book').width(),
                     lastPage = this.createPage(this.model.getLastNote()),
+                    $multipage = this.$el.children('.multipage'),
                     page,
                     pages = [lastPage],
-                    numPages = num || 4,
+                    numPages = num || 16,
                     factor = Math.sqrt(numPages),
                     cssMap = {
                         'height': (height / factor) + 'px',
@@ -116,20 +139,20 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                         '-webkit-transform': 'scale(' + (1 / factor) + ')'
                     };
 
+                $('.book').hide();
                 for (var i = 1; i < numPages; i++) {
                     page = this.getPrevPage(pages[i-1]);
                     pages.push(page);
                 }
                 pages.reverse();
                 for (i = 0; i < pages.length; i++) {
-                    pages[i].$el.appendTo(this.$el.children('.multipage'));
+                    pages[i].$el.appendTo($multipage);
                 }
-                $('.book').hide();
                 $('.multipage .page').css(cssMap);
             },
 
             getCurrentNoteView  : function() {
-                return this.currentPage.noteRecto;
+                return this.currentPage.note;
             },
 
             getCurrentPageView  : function() {
@@ -155,7 +178,6 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 }
             },
 
-            // TODO - add verso
             createPage  : function(note) {
                 var page = new PageView(new NoteView({model: note}));
                 page.$el = $('<div></div>').addClass('page').addClass(note.cid);
@@ -164,18 +186,16 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 return page;
             },
 
-            // TODO - verso
             getNextPage : function(p) {
                 var page = p || this.currentPage,
-                    note = page.noteRecto.model,
+                    note = page.note.model,
                     nextNote = this.model.getNextNote(note),
                     nextPage;
                 if (!nextNote) {
                     return null;
                 } else {
                     nextPage = _.find(this.pages, function(p) {
-                        return p.noteRecto.model == nextNote ||
-                                (p.noteVerso && p.noteVerso.model == nextNote);
+                        return p.note.model == nextNote;
                     });
                     if (!nextPage) {
                         nextPage = this.createPage(nextNote);
@@ -184,18 +204,16 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 }
             },
 
-            // TODO - verso
             getPrevPage : function(p) {
                 var page = p || this.currentPage,
-                    note = page.noteRecto.model,
+                    note = page.note.model,
                     prevNote = this.model.getPrevNote(note),
                     prevPage;
                 if (!prevNote) {
                     return null;
                 } else {
                     prevPage = _.find(this.pages, function(p) {
-                        return p.noteRecto.model == prevNote ||
-                                (p.noteVerso && p.noteVerso.model == prevNote);
+                        return p.note.model == prevNote;
                     });
                     if (!prevPage) {
                         prevPage = this.createPage(prevNote);
@@ -204,7 +222,6 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 }
             },
 
-            // TODO
             isLast      : function(p) {
                 var page = p || this.currentPage,
                     note = page.model;
@@ -212,14 +229,12 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 // return this.getNextPage(page) === null;
             },
 
-            // TODO
             isFirst      : function(p) {
                 var page = p || this.currentPage,
                     note = page.model;
                 return this.model.isFirstNote(note);
             },
 
-            // TODO - verso
             getAdjacentPages            : function(arg1, arg2) {
                 var page = _.isArray(arg1) ? arg1 : this.currentPage,
                     isFwd = _.isBoolean(arg1) ? arg1 : (_.isUndefined(arg2) ? true : arg2),
@@ -372,7 +387,7 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 var that = this;
                 this.$el.off('touchstart');
                 this.$el.off('mousedown');
-                this.$el.on('touchstart', '.recto', function(e) { that.pointerStart(e); });
+                this.$el.on('touchstart', '.page', function(e) { that.pointerStart(e); });
                 this.$el.on('touchmove', '.book', function(e) { that.pointerMove(e); });
                 this.$el.on('touchend', function(e) { that.pointerEnd(e); });
             },
@@ -381,13 +396,17 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 var that = this;
                 this.$el.off('touchstart');
                 this.$el.off('mousedown');
-                this.$el.on('mousedown', '.recto', function(e) { that.pointerStart(e); });
+                this.$el.on('mousedown', '.page', function(e) { that.pointerStart(e); });
                 this.$el.on('mousemove', '.book', function(e) { that.pointerMove(e); });
                 this.$el.on('mouseup', function(e) { that.pointerEnd(e); });
                 // this.$el.on('mouseout', function(e) { that.pointerEnd(e); });
             },
 
             pointerStart    : function(e) {
+                if (e.touches && e.touches.length > 1) {
+                    this.endLongClickTimer();
+                    return;
+                }
                 var a = this.analysePointerEvent(e),
                     that = this;
                 if (!a.isTouch) {

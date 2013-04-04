@@ -54,15 +54,12 @@ define(['collections/notes', 'models/notebook', 'views/app', 'views/notebook', '
             $.onshake(function() {
                 Backbone.Mediator.pub('note:randomisestyle');
             });
+            
 
             // this.collections.lists = new TaskLists();
             // this.views.listMenu = new ListMenuView({ collection: this.collections.lists });
 
             document.body.addEventListener("touchstart", function(e) {
-                // var $currentNote = context.views.notebook.getCurrentPageView().$rectoEl.children('.note');
-                // if ($currentNote.scrollTop() === 0) {
-                //     $currentNote[0].scrollTop = 1;
-                // }
                 if ($('.main').scrollTop() === 0) {
                     $('.main')[0].scrollTop = 1;
                 }
@@ -72,27 +69,13 @@ define(['collections/notes', 'models/notebook', 'views/app', 'views/notebook', '
                 this.touchY = undefined;
             }, false);
 
-            // var elem = $('.main')[0];
-            // elem.addEventListener('touchstart', function(event){
-            //     startY = event.touches[0].pageY;
-            //     startTopScroll = elem.scrollTop;
-
-            //     if(startTopScroll <= 0)
-            //         elem.scrollTop = 1;
-
-            //     if(startTopScroll + elem.offsetHeight >= elem.scrollHeight)
-            //         elem.scrollTop = elem.scrollHeight - elem.offsetHeight - 1;
-            // }, false);
-
         };
 
         App.prototype = {
             views: {},
             collections: {},
-            models: {},
+            models: {}
 
-            randomiseCurrentNote    : function() {
-            }
         };
 
         return App;
