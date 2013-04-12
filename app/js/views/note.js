@@ -1,6 +1,6 @@
-define(['text!templates/note.html', 'text!templates/note-edit.html'],
+define(['text!templates/note.html', 'text!templates/note-edit.html', 'views/transformUtils'],
 
-    function(template, editTemplate) {
+    function(template, editTemplate, transformUtils) {
 
         // get Markdown working
         var converter = new Showdown.converter();
@@ -20,7 +20,7 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
             render      : function() {
                 var html;
                 if (this.model.get('content').length === 0) {
-                    this.showEditView();
+                    this.showEditView(true);
                 } else {
                     html = this.renderContent();
                     this.$el.html(html);
@@ -45,12 +45,12 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                 var html = this.editTemplate(this.toJSON(true)),
                     $editView = $(html),
                     $textArea;
-                this.$el.append($editView);
+                $('#edit-holder').append($editView).show();
                 $editView.on('mousedown mouseup mousemove touchstart touchend touchmove', function(e) {
                     e.stopPropagation();
                 });
 
-                $textArea = this.$el.find('textarea');
+                $textArea = $editView.find('textarea');
 
                 if (focus) {
                     // wait till $el has been added to the page so there's something to focus on...
@@ -59,10 +59,15 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     }, 550);
                 }
                 $textArea.one('blur', $.proxy(this.hideEditView, this));
+                // TODO
+                // if this is a new model...
+                // Backbone.Mediator.pub('note:add');
+                // else
+                Backbone.Mediator.pub('note:edit');
             },
 
             hideEditView    : function() {
-                var $editView = this.$el.find('.note-edit'),
+                var $editView = $('#edit-holder').find('.note-edit'),
                     $textArea = $editView.find('textarea'),
                     val = $textArea.val();
 
@@ -73,8 +78,10 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
                     this.model.set('stylable', true);
                     this.model.set('content', val);
                     this.model.save();
+                    $('#edit-holder').hide();
                     $editView.remove();
                 }
+                Backbone.Mediator.pub('note:view');
             },
 
             renderStyle     : function() {
@@ -414,6 +421,8 @@ define(['text!templates/note.html', 'text!templates/note-edit.html'],
             }
 
         });
+
+        _.extend(NoteView.prototype, transformUtils);
 
         return NoteView;
     }

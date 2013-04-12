@@ -1,6 +1,6 @@
-define(['text!templates/page.html', 'views/note'],
+define(['text!templates/page.html', 'views/note', 'views/transformUtils'],
 
-    function(template, NoteView) {
+    function(template, NoteView, transformUtils) {
 
         var PageView = Backbone.View.extend({
 
@@ -8,14 +8,13 @@ define(['text!templates/page.html', 'views/note'],
 
             initialize  : function(nv) {
                 this.note = nv;
+                this.$el = $('<div></div>').addClass('page').attr('id', nv.model.cid);
             },
 
             render      : function() {
-                // TODO - add noteVerso
-                // this.$rectoEl = $('<div></div>').addClass('side recto').attr('id', this.noteRecto.model.get('key'));
-                // this.noteRecto.$el = this.$rectoEl;
                 this.note.render();
                 this.$el.append(this.note.$el);
+                return this;
             },
 
             getEl   : function() {
@@ -26,16 +25,25 @@ define(['text!templates/page.html', 'views/note'],
                 return this.note;
             },
 
-            // sideCss  : function(name, value, rectoVerso) {
-            //     var filter = rectoVerso ? (rectoVerso == 'recto' ? '.recto' : '.verso') : undefined;
-            //     this.$el.children(filter).css(name, value);
-            // },
-
             css     : function(name, value) {
                 this.$el.css(name, value);
-            }
+            },
 
+            setMultiPosition    : function(pos) {
+                var classes = this.$el.attr('class').split(/\s+/),
+                    className = 'multi-'+pos;
+                _.each(classes, function(cl) {
+                    if (cl == className) {
+                        return;
+                    } else if (cl.substr(0, 5) == 'multi') {
+                        this.$el.removeClass(cl);
+                    }
+                });
+                this.$el.addClass(className);
+            }
         });
+
+        _.extend(PageView.prototype, transformUtils);
 
         return PageView;
     }

@@ -530,32 +530,67 @@ td {
       height: 548px; } }
 
 /* line 33, ../sass/notebook.scss */
-.multipage {
+#book-holder #multipage .current {
+  top: 0;
+  left: 0;
+  -webkit-transform: none;
+  z-index: 10; }
+
+/* line 40, ../sass/notebook.scss */
+#multipage {
   position: absolute;
   width: 320px;
   height: 460px;
+  background-color: #000;
   top: 0px;
   left: 0px; }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 33, ../sass/notebook.scss */
-    .multipage {
+    /* line 40, ../sass/notebook.scss */
+    #multipage {
       width: 320px;
       height: 460px; } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 33, ../sass/notebook.scss */
-    .multipage {
+    /* line 40, ../sass/notebook.scss */
+    #multipage {
       width: 320px;
       height: 548px; } }
-  /* line 47, ../sass/notebook.scss */
-  .multipage .page {
-    -webkit-transform-origin: 0 0 0;
-    float: left;
-    position: static; }
   /* line 55, ../sass/notebook.scss */
-  .multipage .note {
+  #multipage .page {
+    -webkit-transform-origin: 0 0 0;
+    position: absolute;
+    -webkit-transform: scale(0.24);
+    width: 80px;
+    height: 115px;
+    border-radius: 3px; }
+  /* line 65, ../sass/notebook.scss */
+  #multipage .multi-0, #multipage .multi-1, #multipage .multi-2, #multipage .multi-3 {
+    top: 0; }
+  /* line 68, ../sass/notebook.scss */
+  #multipage .multi-4, #multipage .multi-5, #multipage .multi-6, #multipage .multi-7 {
+    top: 115px; }
+  /* line 71, ../sass/notebook.scss */
+  #multipage .multi-8, #multipage .multi-9, #multipage .multi-10, #multipage .multi-11 {
+    top: 230px; }
+  /* line 74, ../sass/notebook.scss */
+  #multipage .multi-12, #multipage .multi-13, #multipage .multi-14, #multipage .multi-15 {
+    top: 345px; }
+  /* line 77, ../sass/notebook.scss */
+  #multipage .multi-0, #multipage .multi-4, #multipage .multi-8, #multipage .multi-12 {
+    left: 0px; }
+  /* line 80, ../sass/notebook.scss */
+  #multipage .multi-1, #multipage .multi-5, #multipage .multi-9, #multipage .multi-13 {
+    left: 80px; }
+  /* line 83, ../sass/notebook.scss */
+  #multipage .multi-2, #multipage .multi-6, #multipage .multi-10, #multipage .multi-14 {
+    left: 160px; }
+  /* line 86, ../sass/notebook.scss */
+  #multipage .multi-3, #multipage .multi-7, #multipage .multi-11, #multipage .multi-15 {
+    left: 240px; }
+  /* line 90, ../sass/notebook.scss */
+  #multipage .note {
     overflow-y: hidden; }
 
-/* line 60, ../sass/notebook.scss */
+/* line 95, ../sass/notebook.scss */
 #page-store {
   display: none; }
 
@@ -584,28 +619,17 @@ td {
       width: 320px;
       height: 548px; } }
 
-/* line 26, ../sass/page.scss */
-.side {
-  box-sizing: border-box;
-  position: absolute;
-  top: 0px;
-  width: 320px;
-  height: 460px;
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  -o-backface-visibility: hidden;
-  backface-visibility: hidden; }
+/* line 44, ../sass/page.scss */
+.offscreen {
+  -webkit-transform: translateX(-320px); }
   @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 26, ../sass/page.scss */
-    .side {
-      width: 320px;
-      height: 460px; } }
+    /* line 44, ../sass/page.scss */
+    .offscreen {
+      -webkit-transform: translateX(-320px); } }
   @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 26, ../sass/page.scss */
-    .side {
-      width: 320px;
-      height: 548px; } }
+    /* line 44, ../sass/page.scss */
+    .offscreen {
+      -webkit-transform: translateX(-320px); } }
 
 /* line 81, ../sass/screen.scss */
 html {
@@ -616,17 +640,26 @@ html, body {
   height: 100%; }
 
 /* line 89, ../sass/screen.scss */
+body {
+  background-image: url(/img/splash-4.png);
+  background-size: 320px 460px; }
+
+/* line 94, ../sass/screen.scss */
 .main {
   width: 100%;
   height: 100%;
   min-height: 100%;
-  background-image: url(/img/splash-4.png);
-  background-size: 320px 460px;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch; }
 
-/* line 100, ../sass/screen.scss */
-#pull-up {
+/* line 103, ../sass/screen.scss */
+#boxes {
+  position: absolute;
+  top: 259px;
+  left: 120px; }
+
+/* line 109, ../sass/screen.scss */
+#pull-up-msg {
   position: absolute;
   top: 0;
   left: 0;
@@ -642,25 +675,22 @@ html, body {
   -moz-user-select: -moz-none;
   -ms-user-select: none;
   user-select: none; }
-  /* line 119, ../sass/screen.scss */
-  #pull-up .page {
+  /* line 128, ../sass/screen.scss */
+  #pull-up-msg .page {
     left: 0; }
-  /* line 123, ../sass/screen.scss */
-  #pull-up .side {
+  /* line 132, ../sass/screen.scss */
+  #pull-up-msg .side {
     left: 0; }
-  /* line 127, ../sass/screen.scss */
-  #pull-up .note {
+  /* line 136, ../sass/screen.scss */
+  #pull-up-msg .note {
     -webkit-overflow-scrolling: none;
     overflow-y: hidden; }
 
-/* line 133, ../sass/screen.scss */
-.offscreen {
-  -webkit-transform: translateX(-320px); }
-  @media screen and (device-aspect-ratio: 2 / 3) {
-    /* line 133, ../sass/screen.scss */
-    .offscreen {
-      -webkit-transform: translateX(-320px); } }
-  @media screen and (device-aspect-ratio: 40 / 71) {
-    /* line 133, ../sass/screen.scss */
-    .offscreen {
-      -webkit-transform: translateX(-320px); } }
+/* line 142, ../sass/screen.scss */
+#edit-holder {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%; }

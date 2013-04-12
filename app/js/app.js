@@ -45,6 +45,8 @@ define(['collections/notes', 'models/notebook', 'views/app', 'views/notebook', '
 
             this.views.pageButtons = new PageButtonsView({'app': this});
 
+            // note:view | note:edit | note:add | multi:view
+            this.mode = 'note:view';
 
             // this.views.app.on('randomiseStyle', $.proxy(function() {
             //     this.views.notebook.getCurrentNoteView().model.setRandomStyle();
@@ -54,20 +56,49 @@ define(['collections/notes', 'models/notebook', 'views/app', 'views/notebook', '
             $.onshake(function() {
                 Backbone.Mediator.pub('note:randomisestyle');
             });
-            
 
-            // this.collections.lists = new TaskLists();
-            // this.views.listMenu = new ListMenuView({ collection: this.collections.lists });
-
+            // stop the window from bouncing
             document.body.addEventListener("touchstart", function(e) {
                 if ($('.main').scrollTop() === 0) {
                     $('.main')[0].scrollTop = 1;
                 }
             }, false);
 
-            document.body.addEventListener("touchend", function(e) {
-                this.touchY = undefined;
-            }, false);
+            $('.main').on('scroll', function() {
+                var pullUpMsg;
+                if ($('.main').scrollTop() < 0) {
+                    if (heft.mode == 'note:view') {
+                        pullUpMsg = 'Add a new note...';
+                    } else if (heft.mode == 'note:edit') {
+                        pullUpMsg = 'Delete this note...';
+                    } else {
+                        pullUpMsg = '';
+                    }
+                    $('#pull-up-msg').html(pullUpMsg);
+                }
+                if ($('.main').scrollTop() < -100) {
+                    $('.main')[0].scrollTop = 1;
+                    if (heft.mode == 'note:view') {
+                        heft.views.notebook.createNote();
+                        Backbone.Mediator.pub('note:add');
+                        heft.views.notebook.isScrolling = false;
+                    }
+                }
+            });
+
+            Backbone.Mediator.sub('note:add', function() {
+                this.mode = 'note:add';
+            }, this);
+            Backbone.Mediator.sub('note:edit', function() {
+                this.mode = 'note:edit';
+            }, this);
+            Backbone.Mediator.sub('note:view', function() {
+                this.mode = 'note:view';
+            }, this);
+
+            // document.body.addEventListener("touchend", function(e) {
+            //     this.touchY = undefined;
+            // }, false);
 
         };
 

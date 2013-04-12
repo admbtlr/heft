@@ -30,10 +30,18 @@
     }
 }
 
-.multipage {
+#book-holder #multipage .current {
+    top: 0;
+    left: 0;
+    -webkit-transform: none;
+    z-index: 10;
+}
+
+#multipage {
     position: absolute;
     width: $pageWidth;
     height: $pageHeight;
+    background-color: #000;
     @include iphone4 {
         width: $ip4PageWidth;
         height: $ip4PageHeight;
@@ -46,12 +54,39 @@
     left: 0px;
     .page {
         -webkit-transform-origin: 0 0 0;
-        float: left;
         // height: 230px;
         // width: 160px;
-        position: static;
-        // -webkit-transform: scale(0.5);
+        position: absolute;
+        -webkit-transform: scale(0.24);
+        width: 80px;
+        height: 115px;
+        border-radius: 3px;
     }
+    .multi-0, .multi-1, .multi-2, .multi-3 {
+        top: 0;
+    }
+    .multi-4, .multi-5, .multi-6, .multi-7 {
+        top: 115px;
+    }
+    .multi-8, .multi-9, .multi-10, .multi-11 {
+        top: 230px;
+    }
+    .multi-12, .multi-13, .multi-14, .multi-15 {
+        top: 345px;
+    }
+    .multi-0, .multi-4, .multi-8, .multi-12 {
+        left: 0px;
+    }
+    .multi-1, .multi-5, .multi-9, .multi-13 {
+        left: 80px;
+    }
+    .multi-2, .multi-6, .multi-10, .multi-14 {
+        left: 160px;
+    }
+    .multi-3, .multi-7, .multi-11, .multi-15 {
+        left: 240px;
+    }
+
     .note {
         overflow-y: hidden;
     }
