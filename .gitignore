@@ -1,6 +1,7 @@
 *.sublime*
 *-ck.js
 .sass-cache/
+.DS_Store
 
 lib-cov
 *.seed
