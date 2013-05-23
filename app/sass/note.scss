@@ -49,7 +49,7 @@
         -webkit-hyphens: auto;
     }
 
-    @include backface-visibility(hidden);
+    // @include backface-visibility(hidden);
     @include iphone {
         -webkit-overflow-scrolling: touch;
         -webkit-transform: translateZ(0px);

@@ -2,6 +2,17 @@ define([], function() {
 
     var transformUtils = {
 
+        scale: 1,
+
+        setScale: function(scale, callback) {
+            this.scale = scale;
+            this.setTransform('scale('+scale+')', callback);
+        },
+
+        setOpacity: function(opacity) {
+            this.$el.css('opacity', opacity);
+        },
+
         getTransition   : function() {
             return this.$el.css('-webkit-transition');
         },

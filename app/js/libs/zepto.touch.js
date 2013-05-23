@@ -198,12 +198,14 @@
         $(document).bind('gesturestart', function(e) {
           var now = Date.now(), delta = now - (gesture.last || now);
           gesture.target = parentIfText(e.target);
-          // gestureTimeout && clearTimeout(gestureTimeout);
+          $(gesture.target).trigger('heft:pinchstart');
           gesture.e1 = e.scale;
           gesture.last = now;
         }).bind('gesturechange', function(e){
           gesture.e2 = e.scale;
-          $(gesture.target).trigger('heft:pinchchange', { 'distance': gesture.e1 - gesture.e2 });
+          if (Math.abs(gesture.e1 - gesture.e2) > 0.05) {
+            $(gesture.target).trigger('heft:pinchchange', { 'distance': gesture.e1 - gesture.e2 });
+          }
         }).bind('gestureend', function(e){
           if (gesture.e2 > 0) {
             if (Math.abs(gesture.e1 - gesture.e2) !== 0) {
@@ -211,6 +213,7 @@
                 $(gesture.target).trigger('heft:pinch' + (gesture.e1 - gesture.e2 > 0 ? 'in' : 'out'));
             }
             gesture.e1 = gesture.e2 = gesture.last = 0;
+            $(gesture.target).trigger('heft:pinchend');
           } else if ('last' in gesture) {
             gesture = {};
           }

@@ -58,25 +58,35 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 var context = this;
 
                 this.$el.on('heft:tap', $.proxy(function(e) {
-                    if (e.data.xCoord < 0.2) {
-                        context.swipePage(false);
-                    } else if (e.data.xCoord > 0.8) {
-                        context.swipePage(true);
+                    if (!context.multipage) {
+                        if (e.data.xCoord < 0.2) {
+                            context.swipePage(false);
+                        } else if (e.data.xCoord > 0.8) {
+                            context.swipePage(true);
+                        }
                     }
                 }, context));
                 this.$el.on('heft:dragstart', $.proxy(function(e) {
-                    context.initiatePageSwipe(e.data.direction == 'left');
+                    if (!context.multipage) {
+                        context.initiatePageSwipe(e.data.direction == 'left');
+                    }
                 }, context));
                 this.$el.on('heft:dragcontinue', $.proxy(function(e) {
-                    context.swipePageIncremental(e.data.direction == 'left', e.data.diff);
+                    if (!context.multipage) {
+                        context.swipePageIncremental(e.data.direction == 'left', e.data.diff);
+                    }
                 }, context));
                 this.$el.on('heft:dragend', $.proxy(function(e) {
-                    context.concludeIncrementalPageSwipe(e.data.direction == 'left');
+                    if (!context.multipage) {
+                        context.concludeIncrementalPageSwipe(e.data.direction == 'left');
+                    }
                 }, context));
                 this.$el.on('heft:longtap', $.proxy(function() {
-                    var nv = context.getCurrentNoteView();
-                    if (nv) {
-                        nv.showEditView.apply(nv, [true]);
+                    if (!context.multipage) {
+                        var nv = context.getCurrentNoteView();
+                        if (nv) {
+                            nv.showEditView.apply(nv, [true]);
+                        }
                     }
                 }, context));
 
@@ -91,9 +101,21 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                     }, context));
                 }, 1000);
 
+                this.$el.on('heft:pinchstart', $.proxy(function(e) {
+                    if (!this.isMultipage) {
+                        this.pinchStart();
+                    }
+                }, context));
+
                 this.$el.on('heft:pinchchange', $.proxy(function(e) {
                     if (!this.isMultipage) {
                         this.pinchPage(e.data.distance);
+                    }
+                }, context));
+
+                this.$el.on('heft:pinchend', $.proxy(function(e) {
+                    if (!this.isMultipage) {
+                        this.pinchEnd();
                     }
                 }, context));
 
@@ -146,7 +168,6 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 $('.book').css('pointer-events', 'none');
                 $('#multipage').css('opacity', '1');
                 this.isMultipage = true;
-
             },
 
             renderCurrent16Block    : function() {
@@ -445,14 +466,25 @@ define(['text!templates/notebook.html', 'views/note', 'views/page'],
                 Backbone.Mediator.pub('note:selected', this.currentPage.getNote());
             },
 
+            pinchStart  : function() {
+                this.getNextPage().css('opacity', 0);
+            },
+
             pinchPage   : function(distance) {
-                distance = distance < 0 ? 0 : distance;
+                distance = distance < 0 ? 0 : distance; 
                 if (distance > 0.5) {
                     this.renderMultiPage();
                     this.currentPage.clearTransform();
                 } else {
-                    this.currentPage.setTransform('scale('+(1 - distance)+')');
+                    this.currentPage.setScale(1 - distance);
                 }
+            },
+
+            pinchEnd  : function() {
+                var nextPage = this.getNextPage();
+                this.currentPage.setScale(1, function() {
+                    nextPage.setOpacity(1);
+                });
             }
 
             /* Tap/Mouse event stuff */

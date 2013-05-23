@@ -52,12 +52,14 @@
     }
     top: 0px;
     left: 0px;
+    opacity: 0;
+    -webkit-transition: opacity 1s;
     .page {
         -webkit-transform-origin: 0 0 0;
         // height: 230px;
         // width: 160px;
         position: absolute;
-        -webkit-transform: scale(0.24);
+        -webkit-transform: scale(0.25);
         width: 80px;
         height: 115px;
         border-radius: 3px;
