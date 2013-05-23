@@ -2,7 +2,7 @@ requirejs.config({
     baseUrl: 'js',
 
     paths: {
-        underscore: 'libs/underscore',
+        underscore: 'libs/lodash.underscore',
         backbone: 'libs/backbone',
         text: 'libs/text',
         mediator: 'libs/backbone-mediator',
